@@ -3,7 +3,6 @@
 import React from "react";
 import { Quote } from "../models/ExchangeBookGenerator";
 import {
-  COL_BG_COLOR,
   TEXT_COLOR,
   ROW_COLORS,
   DEFAULT_ROW_COLOR,
@@ -44,21 +43,12 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
     }
   }
 
-  // Find NBBO (best price)
-  const bestPrice = sortedQuotes.length > 0
-    ? (side === "bid" ? sortedQuotes[0].priceBid : sortedQuotes[0].priceAsk)
-    : 0;
-
-  // Calculate max size for visualization
-  const maxSize = Math.max(...sortedQuotes.slice(0, MAX_ROWS).map(q =>
-    side === "bid" ? q.sizeBid : q.sizeAsk
-  ));
 
   return (
     <div
       className="orderbook-column"
       style={{
-        backgroundColor: COL_BG_COLOR,
+        backgroundColor: "rgb(0, 0, 0)",
         border: highlighted ? `3px solid rgb(0, 200, 0)` : "none",
       }}
     >
@@ -80,13 +70,57 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
         {side.toUpperCase()}
       </div>
 
+      {/* Column headers */}
+      <div
+        className="orderbook-column-headers"
+        style={{
+          backgroundColor: "rgb(30, 30, 30)",
+          height: `${ROW_HEIGHT}px`,
+          display: "flex",
+          alignItems: "center",
+          padding: "0 5px",
+          borderBottom: "1px solid rgb(60, 60, 60)",
+        }}
+      >
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "50px",
+          }}
+        >
+          Maker
+        </span>
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "65px",
+            textAlign: "right",
+          }}
+        >
+          Price
+        </span>
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "70px",
+            textAlign: "right",
+          }}
+        >
+          Size
+        </span>
+      </div>
+
       {sortedQuotes.slice(0, MAX_ROWS).map((quote, idx) => {
         const price = side === "bid" ? quote.priceBid : quote.priceAsk;
         const size = side === "bid" ? quote.sizeBid : quote.sizeAsk;
         const r = ranks.get(price) || 0;
         const bgColor = r < ROW_COLORS.length ? ROW_COLORS[r] : DEFAULT_ROW_COLOR;
-        const isNBBO = price === bestPrice;
-        const sizePercentage = (size / maxSize) * 100;
 
         return (
           <div
@@ -98,24 +132,8 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
               display: "flex",
               alignItems: "center",
               padding: "0 5px",
-              position: "relative",
-              overflow: "hidden",
             }}
           >
-            {/* Size visualization bar */}
-            <div
-              className="size-bar"
-              style={{
-                position: "absolute",
-                right: 0,
-                top: 0,
-                bottom: 0,
-                width: `${sizePercentage}%`,
-                background: "rgba(0, 0, 0, 0.1)",
-                zIndex: 0,
-              }}
-            />
-
             <span
               className="exchange"
               style={{
@@ -123,11 +141,9 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 fontSize: "11px",
                 fontWeight: "bold",
                 width: "50px",
-                position: "relative",
-                zIndex: 1,
               }}
             >
-              {isNBBO && "★"}{quote.exchange.substring(0, 4)}
+              {quote.exchange.substring(0, 4)}
             </span>
             <span
               className="price"
@@ -137,8 +153,6 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 fontWeight: "bold",
                 width: "65px",
                 textAlign: "right",
-                position: "relative",
-                zIndex: 1,
               }}
             >
               {price.toFixed(2)}
@@ -151,8 +165,6 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 fontWeight: "bold",
                 width: "70px",
                 textAlign: "right",
-                position: "relative",
-                zIndex: 1,
               }}
             >
               {size}

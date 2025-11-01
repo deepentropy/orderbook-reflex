@@ -451,21 +451,28 @@ body {
 
 /* Memory Challenge Modal */
 .challenge-modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2000;
-  background: rgba(20, 20, 20, 0.98);
-  border: 3px solid rgb(100, 150, 255);
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
-  animation: challenge-appear 0.3s ease-out;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: challenge-backdrop-appear 0.3s ease-out;
 }
 
 .challenge-content {
+  background: rgba(20, 20, 20, 0.98);
+  border: 3px solid rgb(100, 150, 255);
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  animation: challenge-appear 0.3s ease-out;
   text-align: center;
+  max-width: 500px;
 }
 
 .challenge-title {
@@ -514,13 +521,22 @@ body {
   font-style: italic;
 }
 
-@keyframes challenge-appear {
+@keyframes challenge-backdrop-appear {
   0% {
-    transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes challenge-appear {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
     opacity: 1;
   }
 }
@@ -534,4 +550,111 @@ body {
   padding: 4px 6px;
   text-align: center;
   border-bottom: 1px solid rgb(60, 60, 60);
+}
+
+/* Welcome Modal */
+.welcome-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: challenge-backdrop-appear 0.3s ease-out;
+}
+
+.welcome-content {
+  background: linear-gradient(135deg, rgb(30, 30, 30), rgb(40, 40, 40));
+  border: 3px solid rgb(87, 254, 1);
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  animation: challenge-appear 0.3s ease-out;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.welcome-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: rgb(87, 254, 1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.welcome-text {
+  color: rgb(220, 220, 220);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.welcome-text p {
+  margin-bottom: 15px;
+}
+
+.welcome-section {
+  margin-bottom: 20px;
+}
+
+.welcome-section h3 {
+  font-size: 16px;
+  color: rgb(100, 200, 255);
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.welcome-section ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.welcome-section li {
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.welcome-section li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: rgb(87, 254, 1);
+  font-weight: bold;
+}
+
+.welcome-text kbd {
+  background: rgb(60, 60, 60);
+  border: 1px solid rgb(80, 80, 80);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 12px;
+  color: rgb(255, 200, 0);
+  font-weight: bold;
+}
+
+.welcome-button {
+  width: 100%;
+  background: linear-gradient(135deg, rgb(87, 254, 1), rgb(0, 200, 0));
+  border: none;
+  color: rgb(30, 30, 30);
+  padding: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s;
+}
+
+.welcome-button:hover {
+  background: linear-gradient(135deg, rgb(100, 255, 50), rgb(50, 220, 50));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(87, 254, 1, 0.4);
 }

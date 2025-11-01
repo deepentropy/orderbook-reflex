@@ -119,6 +119,10 @@ function App() {
     const saved = localStorage.getItem("challengesEnabled");
     return saved ? JSON.parse(saved) : true;
   });
+  const [showWelcome, setShowWelcome] = useState(() => {
+    const hasVisited = localStorage.getItem("hasVisited");
+    return !hasVisited;
+  });
 
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
@@ -523,6 +527,12 @@ function App() {
     setIsPaused(false);
   }, [memoryChallenge, showFeedback]);
 
+  // Handle welcome close
+  const handleWelcomeClose = useCallback(() => {
+    localStorage.setItem("hasVisited", "true");
+    setShowWelcome(false);
+  }, []);
+
   if (!priceModel) {
     return (
       <div className="loading">
@@ -701,6 +711,58 @@ function App() {
                 ))}
               </div>
               <p className="challenge-hint">+10 XP for correct answer</p>
+            </div>
+          </div>
+        )}
+
+        {/* Welcome Modal */}
+        {showWelcome && (
+          <div className="welcome-modal">
+            <div className="welcome-content">
+              <h2 className="welcome-title">Welcome to OrderBook Reflex Trainer!</h2>
+              <div className="welcome-text">
+                <p><strong>🎯 Your Mission:</strong> Train your reflexes to spot and react to orderbook signals.</p>
+
+                <div className="welcome-section">
+                  <h3>📊 How It Works:</h3>
+                  <ul>
+                    <li><strong>Green Border on BID</strong> = Entry signal (PL - Pivot Low). Press <kbd>{hotkeys.entry}</kbd></li>
+                    <li><strong>Green Border on ASK</strong> = Exit signal (PH - Pivot High). Press <kbd>{hotkeys.exit}</kbd></li>
+                    <li>React as fast as possible within the time window!</li>
+                  </ul>
+                </div>
+
+                <div className="welcome-section">
+                  <h3>⚡ Level System:</h3>
+                  <ul>
+                    <li>Earn XP for successful reactions (1-5 XP based on speed)</li>
+                    <li>Progress through 6 difficulty levels (Novice → Master)</li>
+                    <li>Higher levels = shorter reaction windows = more XP</li>
+                  </ul>
+                </div>
+
+                <div className="welcome-section">
+                  <h3>🧠 Memory Challenges:</h3>
+                  <ul>
+                    <li>Every 10 trades, test your price memory (+10 XP bonus!)</li>
+                    <li>Toggle challenges on/off with the <strong>🧠</strong> button</li>
+                  </ul>
+                </div>
+
+                <div className="welcome-section">
+                  <h3>💡 Tips:</h3>
+                  <ul>
+                    <li>Watch the <strong>Spread</strong> indicator between bid and ask</li>
+                    <li>Notice the color coding: Green (best) → Rose → Yellow → Cyan</li>
+                    <li>Track your improvement via streak counter and stats</li>
+                    <li>Customize hotkeys in settings (⚙️ button)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button className="welcome-button" onClick={handleWelcomeClose}>
+                Let's Start Training!
+              </button>
             </div>
           </div>
         )}
