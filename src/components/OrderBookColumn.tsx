@@ -3,7 +3,6 @@
 import React from "react";
 import { Quote } from "../models/ExchangeBookGenerator";
 import {
-  COL_BG_COLOR,
   TEXT_COLOR,
   ROW_COLORS,
   DEFAULT_ROW_COLOR,
@@ -42,11 +41,12 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
     }
   }
 
+
   return (
     <div
       className="orderbook-column"
       style={{
-        backgroundColor: COL_BG_COLOR,
+        backgroundColor: "rgb(0, 0, 0)",
         border: highlighted ? `3px solid rgb(0, 200, 0)` : "none",
       }}
     >
@@ -59,6 +59,52 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
         }}
       >
         {side.toUpperCase()}
+      </div>
+
+      {/* Column headers */}
+      <div
+        className="orderbook-column-headers"
+        style={{
+          backgroundColor: "rgb(30, 30, 30)",
+          height: `${ROW_HEIGHT}px`,
+          display: "flex",
+          alignItems: "center",
+          padding: "0 5px",
+          borderBottom: "1px solid rgb(60, 60, 60)",
+        }}
+      >
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "50px",
+          }}
+        >
+          Maker
+        </span>
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "65px",
+            textAlign: "right",
+          }}
+        >
+          Price
+        </span>
+        <span
+          style={{
+            color: "rgb(180, 180, 180)",
+            fontSize: "10px",
+            fontWeight: "bold",
+            width: "70px",
+            textAlign: "right",
+          }}
+        >
+          Size
+        </span>
       </div>
 
       {sortedQuotes.slice(0, MAX_ROWS).map((quote, idx) => {
@@ -85,10 +131,10 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 color: TEXT_COLOR,
                 fontSize: "11px",
                 fontWeight: "bold",
-                width: "60px",
+                width: "50px",
               }}
             >
-              {quote.exchange.substring(0, 5)}
+              {quote.exchange.substring(0, 4)}
             </span>
             <span
               className="price"
@@ -108,7 +154,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 color: TEXT_COLOR,
                 fontSize: "11px",
                 fontWeight: "bold",
-                width: "60px",
+                width: "70px",
                 textAlign: "right",
               }}
             >
