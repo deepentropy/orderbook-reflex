@@ -1,54 +1,92 @@
-# OrderBook Reflex Trainer - React Version
+# OrderBook Reflex Trainer
 
-A React-based order book visualization and reaction time trainer. This application helps traders improve their reaction time to market signals (Pivot Lows and Pivot Highs).
+**[Launch App →](https://houseofai.github.io/orderbook-reflex/)**
+
+A web-based training tool designed to reduce trader reaction time when reading order books and identifying market signals.
 
 ## Overview
 
-This is a React/TypeScript conversion of the original Python/Pygame order book trainer. The app:
-- Displays real-time bid/ask prices from multiple exchanges
-- Detects pivot points (PL = Pivot Low, PH = Pivot High)
-- Trains users to react quickly when signals appear
-- Tracks reaction times and adapts difficulty
-- Can be deployed to GitHub Pages
+OrderBook Reflex Trainer simulates a multi-exchange order book environment and trains traders to quickly recognize and react to pivot points (Pivot Lows and Pivot Highs). The application progressively adapts to your skill level, tightening reaction windows as you improve.
 
-## Original Python Version
+### Key Features
 
-The original Python version is located in the `src/` directory with the following files:
-- `app.py` - Entry point
-- `orderbook_ui.py` - Pygame UI
-- `price_model.py` - Price generation and pivot detection
-- `signal_model.py` - Signal management
-- `exchangebookgenerator.py` - Multi-exchange order book generation
+- **Multi-exchange order book visualization** - Real-time bid/ask prices from 6 simulated exchanges (NSDQ, ARCA, NYSE, BATS, EDGE, BYX)
+- **Pivot point detection** - Automatically identifies Pivot Lows (entry signals) and Pivot Highs (exit signals)
+- **Adaptive difficulty system** - 6 difficulty levels that adjust reaction windows based on performance
+- **Performance tracking** - Comprehensive statistics including reaction times, success rates, and streaks
+- **Memory challenges** - Optional price memory tests to improve market awareness
+- **XP and progression system** - Gamified leveling from Novice to Master
+- **Customizable hotkeys** - Configure controls to match your workflow
 
-The `modelisation/` folder contains the quote generation model (unchanged).
+## How It Works
 
-## Setup
+1. **Monitor the order book** - Watch bid prices (left) and ask prices (right) across multiple exchanges
+2. **Wait for signals** - A green border highlights the column when a pivot point is detected:
+   - **Green border on BID column** = Pivot Low detected (Entry/Buy signal)
+   - **Green border on ASK column** = Pivot High detected (Exit/Sell signal)
+3. **React quickly** - Press the designated hotkey before the time window expires:
+   - Default: **F1** for Entry signals
+   - Default: **F12** for Exit signals
+4. **Improve over time** - The reaction window shrinks as you level up, from 1500ms at Novice to 200ms at Master
 
-### 1. Convert the Model
+## Visual Cues
 
-First, convert the pickle model to JSON format:
+Order book rows are color-coded by price level:
+- **Green** - Best bid/ask (NBBO - National Best Bid and Offer)
+- **Rose** - 2nd best price
+- **Yellow** - 3rd best price
+- **Blue** - 4th best price
+- **Gray** - Other prices
 
+## Statistics & Progression
+
+The app tracks comprehensive metrics to help you measure improvement:
+
+- **Reaction times** - Current, last, and average response times
+- **Success rate** - Percentage of signals correctly identified within the time window
+- **Streaks** - Current and best consecutive successful trades
+- **XP system** - Earn 1-5 XP per successful trade, unlock higher difficulty levels
+- **Session stats** - Track performance within the current session
+- **All-time stats** - Historical performance across all sessions
+
+## Controls
+
+| Action | Default Key | Customizable |
+|--------|-------------|--------------|
+| Entry signal (Pivot Low) | F1 | Yes |
+| Exit signal (Pivot High) | F12 | Yes |
+| Pause/Resume | Space | Yes |
+
+Access the Settings panel (⚙️) to customize hotkeys.
+
+## Running Locally
+
+### Prerequisites
+
+- Node.js 18 or higher
+- npm
+
+### Setup
+
+1. Clone the repository:
 ```bash
-python convert_model.py
+git clone https://github.com/houseofai/orderbook-reflex.git
+cd orderbook-reflex
 ```
 
-This automatically finds the most recent model file in `models/` (based on the date in the filename) and converts it to `public/models/model.json`.
-
-### 2. Install Dependencies
-
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-### 3. Run Development Server
-
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+4. Open http://localhost:5173 in your browser
 
-## Building for Production
+### Building for Production
 
 ```bash
 npm run build
@@ -56,82 +94,56 @@ npm run build
 
 The built files will be in the `dist/` directory.
 
-## Deploying to GitHub Pages
+## Technology Stack
 
-1. Push your code to GitHub
-2. Enable GitHub Pages in repository settings (Settings → Pages)
-3. Set source to "GitHub Actions"
-4. The `.github/workflows/deploy.yml` workflow will automatically build and deploy
-
-Your app will be available at: `https://<username>.github.io/<repository-name>/`
-
-## How to Play
-
-1. **Watch the order book** - Bid column (left) and Ask column (right) show prices from multiple exchanges
-2. **Wait for signals** - A green border highlights the column when a signal appears:
-   - Green border on **Bid** = ENTRY signal (Pivot Low detected)
-   - Green border on **Ask** = EXIT signal (Pivot High detected)
-3. **React quickly**:
-   - Press **F1** when you see ENTRY signal (green border on Bid)
-   - Press **F12** when you see EXIT signal (green border on Ask)
-4. **Improve** - The reaction window adapts: as you get better, the time window shrinks
-
-## Color Coding
-
-Rows are color-coded by price level:
-- 🟢 **Green** - Best price (NBBO)
-- 🌸 **Rose** - 2nd best price
-- 🟡 **Yellow** - 3rd best price
-- 🔵 **Blue** - 4th best price
-- ⚪ **Grey** - Other prices
-
-## Stats Panel
-
-- **Wnd**: Current reaction time window (in milliseconds)
-- **Last**: Your last reaction time
-- **History**: Recent trades showing direction, signal price, and your execution price
-  - 🟢 Green = Success (within time window)
-  - 🔴 Red = Miss (too slow or wrong key)
+- **React 18** - UI framework
+- **TypeScript** - Type safety and better developer experience
+- **Vite** - Fast build tool and development server
+- **GitHub Pages** - Static hosting and deployment
 
 ## Project Structure
 
 ```
 .
-├── public/
-│   ├── index.html          # HTML template
-│   └── models/
-│       └── model.json      # Converted quote generation model
 ├── src/
 │   ├── components/
-│   │   ├── OrderBookColumn.tsx    # Bid/Ask column display
-│   │   └── StatsPanel.tsx         # Stats and history panel
+│   │   ├── OrderBookColumn.tsx    # Bid/Ask column rendering
+│   │   └── StatsPanel.tsx         # Statistics and history display
 │   ├── models/
-│   │   ├── QuoteModel.ts          # Quote generation model
-│   │   ├── ExchangeBookGenerator.ts # Multi-exchange orderbook
+│   │   ├── QuoteModel.ts          # Quote generation engine
+│   │   ├── ExchangeBookGenerator.ts # Multi-exchange simulation
 │   │   ├── PriceModel.ts          # Price updates and pivot detection
-│   │   └── SignalModel.ts         # Signal triggering and timing
-│   ├── App.tsx              # Main application component
-│   ├── App.css              # Styling
-│   ├── constants.ts         # Configuration constants
-│   └── main.tsx             # React entry point
-├── modelisation/            # Original Python model (unchanged)
-├── models/                  # Pickle model files
-├── convert_model.py         # Model conversion script
-├── package.json             # Dependencies
-├── tsconfig.json            # TypeScript config
-└── vite.config.ts           # Vite build config
+│   │   └── SignalModel.ts         # Signal timing and validation
+│   ├── App.tsx                    # Main application component
+│   ├── constants.ts               # Configuration constants
+│   └── main.tsx                   # Application entry point
+├── public/
+│   └── models/
+│       └── model.json             # Price generation model data
+├── .github/workflows/
+│   └── deploy.yml                 # GitHub Pages deployment workflow
+└── package.json                   # Dependencies and scripts
 ```
 
-## Technologies
+## Deployment
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **CSS** - Styling to match original design
+The app automatically deploys to GitHub Pages when changes are pushed to the `main` branch. The workflow:
 
-## Notes
+1. Builds the React app using Vite
+2. Uploads the `dist/` directory to GitHub Pages
+3. Makes the app available at https://houseofai.github.io/orderbook-reflex/
 
-- The `modelisation/` folder remains unchanged as requested
-- Model is in JSON format (converted from pickle)
-- Designed to match the original Python/Pygame version exactly
-- Optimized for GitHub Pages deployment
+## Use Cases
+
+- **Day traders** - Improve reflexes for scalping and quick entries/exits
+- **Market makers** - Train to spot NBBO changes faster
+- **New traders** - Develop muscle memory for reading order books
+- **Skill assessment** - Benchmark reaction times against difficulty levels
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
