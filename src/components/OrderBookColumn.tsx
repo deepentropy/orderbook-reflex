@@ -15,12 +15,14 @@ interface OrderBookColumnProps {
   quotes: Quote[];
   side: "bid" | "ask";
   highlighted: boolean;
+  spread?: number;
 }
 
 export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
   quotes,
   side,
   highlighted,
+  spread = 0,
 }) => {
   // Sort quotes
   const sortedQuotes =
@@ -42,6 +44,16 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
     }
   }
 
+  // Find NBBO (best price)
+  const bestPrice = sortedQuotes.length > 0
+    ? (side === "bid" ? sortedQuotes[0].priceBid : sortedQuotes[0].priceAsk)
+    : 0;
+
+  // Calculate max size for visualization
+  const maxSize = Math.max(...sortedQuotes.slice(0, MAX_ROWS).map(q =>
+    side === "bid" ? q.sizeBid : q.sizeAsk
+  ));
+
   return (
     <div
       className="orderbook-column"
@@ -50,6 +62,13 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
         border: highlighted ? `3px solid rgb(0, 200, 0)` : "none",
       }}
     >
+      {/* Spread indicator - only show on bid side */}
+      {side === "bid" && spread > 0 && (
+        <div className="spread-indicator">
+          Spread: ${spread.toFixed(3)}
+        </div>
+      )}
+
       <div
         className="column-header"
         style={{
@@ -66,6 +85,8 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
         const size = side === "bid" ? quote.sizeBid : quote.sizeAsk;
         const r = ranks.get(price) || 0;
         const bgColor = r < ROW_COLORS.length ? ROW_COLORS[r] : DEFAULT_ROW_COLOR;
+        const isNBBO = price === bestPrice;
+        const sizePercentage = (size / maxSize) * 100;
 
         return (
           <div
@@ -77,18 +98,36 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
               display: "flex",
               alignItems: "center",
               padding: "0 5px",
+              position: "relative",
+              overflow: "hidden",
             }}
           >
+            {/* Size visualization bar */}
+            <div
+              className="size-bar"
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: `${sizePercentage}%`,
+                background: "rgba(0, 0, 0, 0.1)",
+                zIndex: 0,
+              }}
+            />
+
             <span
               className="exchange"
               style={{
                 color: TEXT_COLOR,
                 fontSize: "11px",
                 fontWeight: "bold",
-                width: "60px",
+                width: "50px",
+                position: "relative",
+                zIndex: 1,
               }}
             >
-              {quote.exchange.substring(0, 5)}
+              {isNBBO && "★"}{quote.exchange.substring(0, 4)}
             </span>
             <span
               className="price"
@@ -98,6 +137,8 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 fontWeight: "bold",
                 width: "65px",
                 textAlign: "right",
+                position: "relative",
+                zIndex: 1,
               }}
             >
               {price.toFixed(2)}
@@ -108,8 +149,10 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
                 color: TEXT_COLOR,
                 fontSize: "11px",
                 fontWeight: "bold",
-                width: "60px",
+                width: "70px",
                 textAlign: "right",
+                position: "relative",
+                zIndex: 1,
               }}
             >
               {size}

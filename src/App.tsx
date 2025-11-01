@@ -44,6 +44,38 @@ interface SessionStats {
   startTime: number;
 }
 
+interface DifficultyLevel {
+  name: string;
+  baseWindow: number; // Base reaction window in seconds
+  xpRequired: number; // XP needed to reach this level
+  color: string;
+}
+
+interface PriceSnapshot {
+  timestamp: number;
+  bestBid: number;
+  bestAsk: number;
+  bestBidExchange: string;
+  bestAskExchange: string;
+  spread: number;
+}
+
+interface MemoryChallenge {
+  question: string;
+  correctAnswer: string;
+  options: string[];
+  type: 'price' | 'exchange' | 'spread';
+}
+
+const DIFFICULTY_LEVELS: DifficultyLevel[] = [
+  { name: 'Novice', baseWindow: 1.5, xpRequired: 0, color: 'rgb(150, 150, 150)' },
+  { name: 'Beginner', baseWindow: 1.0, xpRequired: 50, color: 'rgb(100, 200, 100)' },
+  { name: 'Intermediate', baseWindow: 0.7, xpRequired: 150, color: 'rgb(100, 150, 255)' },
+  { name: 'Advanced', baseWindow: 0.5, xpRequired: 300, color: 'rgb(200, 100, 255)' },
+  { name: 'Expert', baseWindow: 0.3, xpRequired: 500, color: 'rgb(255, 200, 50)' },
+  { name: 'Master', baseWindow: 0.2, xpRequired: 800, color: 'rgb(255, 100, 100)' },
+];
+
 function App() {
   const [priceModel, setPriceModel] = useState<PriceModel | null>(null);
   const [signalModel] = useState<SignalModel>(() => new SignalModel());
@@ -75,6 +107,17 @@ function App() {
     trades: 0,
     successful: 0,
     startTime: Date.now()
+  });
+  const [xp, setXp] = useState(() => {
+    const saved = localStorage.getItem("playerXP");
+    return saved ? parseInt(saved) : 0;
+  });
+  const [priceSnapshots, setPriceSnapshots] = useState<PriceSnapshot[]>([]);
+  const [memoryChallenge, setMemoryChallenge] = useState<MemoryChallenge | null>(null);
+  const [showChallenge, setShowChallenge] = useState(false);
+  const [challengesEnabled, setChallengesEnabled] = useState(() => {
+    const saved = localStorage.getItem("challengesEnabled");
+    return saved ? JSON.parse(saved) : true;
   });
 
   const animationFrameRef = useRef<number>();
@@ -129,6 +172,118 @@ function App() {
       totalSessions: prev.totalSessions + 1
     }));
   }, []);
+
+  // Save XP to localStorage
+  useEffect(() => {
+    localStorage.setItem("playerXP", xp.toString());
+  }, [xp]);
+
+  // Save challenges setting
+  useEffect(() => {
+    localStorage.setItem("challengesEnabled", JSON.stringify(challengesEnabled));
+  }, [challengesEnabled]);
+
+  // Calculate current difficulty level
+  const getCurrentLevel = useCallback(() => {
+    for (let i = DIFFICULTY_LEVELS.length - 1; i >= 0; i--) {
+      if (xp >= DIFFICULTY_LEVELS[i].xpRequired) {
+        return DIFFICULTY_LEVELS[i];
+      }
+    }
+    return DIFFICULTY_LEVELS[0];
+  }, [xp]);
+
+  const currentLevel = getCurrentLevel();
+
+  // Get next level info for progress bar
+  const getNextLevelInfo = useCallback(() => {
+    const currentIndex = DIFFICULTY_LEVELS.findIndex(l => l.name === currentLevel.name);
+    if (currentIndex === DIFFICULTY_LEVELS.length - 1) {
+      return { nextLevel: null, progress: 100 };
+    }
+    const nextLevel = DIFFICULTY_LEVELS[currentIndex + 1];
+    const xpIntoCurrentLevel = xp - currentLevel.xpRequired;
+    const xpNeededForNext = nextLevel.xpRequired - currentLevel.xpRequired;
+    const progress = (xpIntoCurrentLevel / xpNeededForNext) * 100;
+    return { nextLevel, progress };
+  }, [currentLevel, xp]);
+
+  // Create memory challenge
+  const createMemoryChallenge = useCallback(() => {
+    if (priceSnapshots.length < 3) return null;
+
+    const recentSnapshot = priceSnapshots[priceSnapshots.length - 1];
+    const challengeTypes = ['bestBid', 'bestAsk', 'bestBidExchange', 'bestAskExchange', 'spread'];
+    const randomType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+
+    const exchanges = ['NSDQ', 'ARCA', 'NYSE', 'BATS', 'EDGE', 'BYX'];
+
+    switch (randomType) {
+      case 'bestBid':
+        return {
+          question: 'What was the best bid price?',
+          correctAnswer: recentSnapshot.bestBid.toFixed(2),
+          options: [
+            recentSnapshot.bestBid.toFixed(2),
+            (recentSnapshot.bestBid - 0.01).toFixed(2),
+            (recentSnapshot.bestBid + 0.01).toFixed(2),
+            (recentSnapshot.bestBid - 0.02).toFixed(2),
+          ].sort(() => Math.random() - 0.5),
+          type: 'price' as const
+        };
+
+      case 'bestAsk':
+        return {
+          question: 'What was the best ask price?',
+          correctAnswer: recentSnapshot.bestAsk.toFixed(2),
+          options: [
+            recentSnapshot.bestAsk.toFixed(2),
+            (recentSnapshot.bestAsk - 0.01).toFixed(2),
+            (recentSnapshot.bestAsk + 0.01).toFixed(2),
+            (recentSnapshot.bestAsk + 0.02).toFixed(2),
+          ].sort(() => Math.random() - 0.5),
+          type: 'price' as const
+        };
+
+      case 'bestBidExchange':
+        return {
+          question: 'Which exchange had the best bid?',
+          correctAnswer: recentSnapshot.bestBidExchange,
+          options: [
+            recentSnapshot.bestBidExchange,
+            ...exchanges.filter(e => e !== recentSnapshot.bestBidExchange).slice(0, 3)
+          ].sort(() => Math.random() - 0.5),
+          type: 'exchange' as const
+        };
+
+      case 'bestAskExchange':
+        return {
+          question: 'Which exchange had the best ask?',
+          correctAnswer: recentSnapshot.bestAskExchange,
+          options: [
+            recentSnapshot.bestAskExchange,
+            ...exchanges.filter(e => e !== recentSnapshot.bestAskExchange).slice(0, 3)
+          ].sort(() => Math.random() - 0.5),
+          type: 'exchange' as const
+        };
+
+      case 'spread':
+        return {
+          question: 'What was the bid-ask spread?',
+          correctAnswer: recentSnapshot.spread.toFixed(2),
+          options: [
+            recentSnapshot.spread.toFixed(2),
+            (recentSnapshot.spread + 0.01).toFixed(2),
+            (recentSnapshot.spread - 0.01).toFixed(2),
+            (recentSnapshot.spread + 0.02).toFixed(2),
+          ].sort(() => Math.random() - 0.5),
+          type: 'spread' as const
+        };
+
+      default:
+        return null;
+    }
+  }, [priceSnapshots]);
 
   // Toggle pause
   const togglePause = useCallback(() => {
@@ -253,8 +408,31 @@ function App() {
           allReactionTimes: newReactionTimes
         };
       });
+
+      // Award XP based on performance
+      let earnedXP = 0;
+      if (ok) {
+        if (rt <= signalModel.reactionWindow * 0.5) {
+          earnedXP = 5; // Perfect
+        } else if (rt <= signalModel.reactionWindow * 0.75) {
+          earnedXP = 3; // Good
+        } else {
+          earnedXP = 1; // Within window
+        }
+        setXp(prev => prev + earnedXP);
+      }
+
+      // Trigger memory challenge every 10 trades
+      if (challengesEnabled && sessionStats.trades > 0 && (sessionStats.trades + 1) % 10 === 0) {
+        const challenge = createMemoryChallenge();
+        if (challenge) {
+          setMemoryChallenge(challenge);
+          setShowChallenge(true);
+          setIsPaused(true);
+        }
+      }
     },
-    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback, currentStreak]
+    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback, currentStreak, sessionStats.trades, challengesEnabled, createMemoryChallenge]
   );
 
   // Setup keyboard listener
@@ -262,6 +440,13 @@ function App() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  // Override reaction window based on difficulty level
+  useEffect(() => {
+    if (signalModel) {
+      signalModel.reactionWindow = currentLevel.baseWindow;
+    }
+  }, [signalModel, currentLevel]);
 
   // Game loop
   useEffect(() => {
@@ -275,6 +460,27 @@ function App() {
 
         // Update price model
         priceModel.update();
+
+        // Capture price snapshot for memory challenges
+        if (priceModel.lastExchangeQuotes.length > 0) {
+          const bestBidQuote = priceModel.lastExchangeQuotes.reduce((best, q) =>
+            q.priceBid > best.priceBid ? q : best
+          );
+          const bestAskQuote = priceModel.lastExchangeQuotes.reduce((best, q) =>
+            q.priceAsk < best.priceAsk ? q : best
+          );
+
+          const snapshot: PriceSnapshot = {
+            timestamp: now,
+            bestBid: bestBidQuote.priceBid,
+            bestAsk: bestAskQuote.priceAsk,
+            bestBidExchange: bestBidQuote.exchange,
+            bestAskExchange: bestAskQuote.exchange,
+            spread: bestAskQuote.priceAsk - bestBidQuote.priceBid
+          };
+
+          setPriceSnapshots(prev => [...prev.slice(-20), snapshot]);
+        }
 
         // Trigger signal when pivot appears
         const pivot = priceModel.pivot;
@@ -298,6 +504,24 @@ function App() {
       }
     };
   }, [priceModel, signalModel, isPaused]);
+
+  // Handle memory challenge answer
+  const handleChallengeAnswer = useCallback((answer: string) => {
+    if (!memoryChallenge) return;
+
+    const correct = answer === memoryChallenge.correctAnswer;
+
+    if (correct) {
+      setXp(prev => prev + 10); // Bonus XP for correct answer
+      showFeedback('CORRECT! +10 XP', 'perfect');
+    } else {
+      showFeedback(`WRONG! Answer: ${memoryChallenge.correctAnswer}`, 'wrong');
+    }
+
+    setShowChallenge(false);
+    setMemoryChallenge(null);
+    setIsPaused(false);
+  }, [memoryChallenge, showFeedback]);
 
   if (!priceModel) {
     return (
@@ -335,6 +559,12 @@ function App() {
   };
 
   const stats = calculateStats();
+  const { nextLevel, progress } = getNextLevelInfo();
+
+  // Calculate spread
+  const spread = priceModel.lastExchangeQuotes.length > 0
+    ? priceModel.bestAsk - priceModel.bestBid
+    : 0;
 
   return (
     <div className="app">
@@ -347,7 +577,36 @@ function App() {
           <button className="control-btn" onClick={() => setShowHotkeyConfig(!showHotkeyConfig)}>
             ⚙ Hotkeys
           </button>
+          <button className="control-btn" onClick={() => setChallengesEnabled(!challengesEnabled)}>
+            {challengesEnabled ? "🧠 On" : "🧠 Off"}
+          </button>
         </div>
+      </div>
+
+      {/* Difficulty Level Bar */}
+      <div className="difficulty-bar">
+        <div className="difficulty-info">
+          <span className="level-name" style={{ color: currentLevel.color }}>
+            {currentLevel.name}
+          </span>
+          <span className="level-xp">
+            {xp} XP {nextLevel && `/ ${nextLevel.xpRequired} XP`}
+          </span>
+        </div>
+        <div className="progress-bar-container">
+          <div
+            className="progress-bar-fill"
+            style={{
+              width: `${Math.min(progress, 100)}%`,
+              background: `linear-gradient(90deg, ${currentLevel.color}, ${nextLevel?.color || currentLevel.color})`
+            }}
+          />
+        </div>
+        {nextLevel && (
+          <div className="next-level-text">
+            Next: {nextLevel.name}
+          </div>
+        )}
       </div>
 
       {showHotkeyConfig && (
@@ -403,12 +662,14 @@ function App() {
           quotes={priceModel.lastExchangeQuotes}
           side="bid"
           highlighted={signalModel.currentSignal === "ENTRY"}
+          spread={spread}
         />
 
         <OrderBookColumn
           quotes={priceModel.lastExchangeQuotes}
           side="ask"
           highlighted={signalModel.currentSignal === "EXIT"}
+          spread={spread}
         />
 
         {/* Feedback overlay */}
@@ -419,6 +680,28 @@ function App() {
             {feedback.type === 'good' && <div className="feedback-subtitle">Within window</div>}
             {feedback.type === 'slow' && <div className="feedback-subtitle">Try to be faster</div>}
             {feedback.type === 'wrong' && <div className="feedback-subtitle">Wrong signal key</div>}
+          </div>
+        )}
+
+        {/* Memory Challenge Modal */}
+        {showChallenge && memoryChallenge && (
+          <div className="challenge-modal">
+            <div className="challenge-content">
+              <h3 className="challenge-title">🧠 Price Memory Challenge</h3>
+              <p className="challenge-question">{memoryChallenge.question}</p>
+              <div className="challenge-options">
+                {memoryChallenge.options.map((option, idx) => (
+                  <button
+                    key={idx}
+                    className="challenge-option"
+                    onClick={() => handleChallengeAnswer(option)}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+              <p className="challenge-hint">+10 XP for correct answer</p>
+            </div>
           </div>
         )}
       </div>
