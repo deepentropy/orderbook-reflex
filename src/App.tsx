@@ -23,6 +23,12 @@ interface HotkeyConfig {
   pause: string;
 }
 
+interface FeedbackState {
+  message: string;
+  type: 'perfect' | 'good' | 'slow' | 'wrong' | null;
+  visible: boolean;
+}
+
 function App() {
   const [priceModel, setPriceModel] = useState<PriceModel | null>(null);
   const [signalModel] = useState<SignalModel>(() => new SignalModel());
@@ -36,9 +42,12 @@ function App() {
     return saved ? JSON.parse(saved) : { entry: ENTRY_KEY, exit: EXIT_KEY, pause: " " };
   });
   const [recordingKey, setRecordingKey] = useState<'entry' | 'exit' | 'pause' | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackState>({ message: '', type: null, visible: false });
+  const [flashEffect, setFlashEffect] = useState<'success' | 'error' | null>(null);
 
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
+  const feedbackTimerRef = useRef<number>();
 
   // Load model on mount
   useEffect(() => {
@@ -81,6 +90,24 @@ function App() {
     setIsPaused((prev) => !prev);
   }, []);
 
+  // Show feedback helper
+  const showFeedback = useCallback((message: string, type: FeedbackState['type']) => {
+    // Clear existing timer
+    if (feedbackTimerRef.current) {
+      window.clearTimeout(feedbackTimerRef.current);
+    }
+
+    // Show feedback
+    setFeedback({ message, type, visible: true });
+    setFlashEffect(type === 'wrong' || type === 'slow' ? 'error' : 'success');
+
+    // Hide feedback after delay
+    feedbackTimerRef.current = window.setTimeout(() => {
+      setFeedback({ message: '', type: null, visible: false });
+      setFlashEffect(null);
+    }, 1000);
+  }, []);
+
   // Keyboard event handler
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -105,36 +132,53 @@ function App() {
       const now = performance.now() / 1000;
       const dirActive = signalModel.currentSignal;
 
+      // Check if there's an active signal to respond to
+      if (!dirActive || signalModel.signalTimestamp === null) return;
+
       let sigPrice: number = 0;
       let userPrice: number = 0;
 
-      if (dirActive) {
-        if (dirActive === "ENTRY") {
-          sigPrice = priceModel.pivotBid;
-          userPrice = priceModel.bestBid;
-        } else {
-          sigPrice = priceModel.pivotAsk;
-          userPrice = priceModel.bestAsk;
-        }
+      if (dirActive === "ENTRY") {
+        sigPrice = priceModel.pivotBid;
+        userPrice = priceModel.bestBid;
+      } else {
+        sigPrice = priceModel.pivotAsk;
+        userPrice = priceModel.bestAsk;
+      }
+
+      const rt = now - signalModel.signalTimestamp;
+      const correctKey = (dirActive === "ENTRY" && event.key === hotkeys.entry) ||
+                         (dirActive === "EXIT" && event.key === hotkeys.exit);
+
+      // Determine feedback type
+      if (!correctKey) {
+        showFeedback('WRONG KEY!', 'wrong');
+        return; // Don't record wrong key presses
       }
 
       const ok = signalModel.recordReactionWithKey(event.key, now, hotkeys.entry, hotkeys.exit);
 
-      if (dirActive && signalModel.signalTimestamp !== null) {
-        const rt = now - signalModel.signalTimestamp;
-        const newEntry: HistoryEntry = {
-          dir: dirActive,
-          sigPrice,
-          userPrice,
-          rt,
-          ok,
-        };
-
-        setHistory((prev) => [...prev.slice(-49), newEntry]);
-        setLastRt(rt);
+      // Show feedback based on reaction time
+      if (rt <= signalModel.reactionWindow * 0.5) {
+        showFeedback('PERFECT!', 'perfect');
+      } else if (rt <= signalModel.reactionWindow) {
+        showFeedback('GOOD!', 'good');
+      } else {
+        showFeedback('TOO SLOW!', 'slow');
       }
+
+      const newEntry: HistoryEntry = {
+        dir: dirActive,
+        sigPrice,
+        userPrice,
+        rt,
+        ok,
+      };
+
+      setHistory((prev) => [...prev.slice(-49), newEntry]);
+      setLastRt(rt);
     },
-    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey]
+    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback]
   );
 
   // Setup keyboard listener
@@ -267,7 +311,7 @@ function App() {
         </div>
       )}
 
-      <div className="main-content">
+      <div className={`main-content ${flashEffect ? `flash-${flashEffect}` : ''}`}>
         <StatsPanel
           reactionWindow={signalModel.reactionWindow}
           lastRt={lastRt}
@@ -287,6 +331,17 @@ function App() {
           side="ask"
           highlighted={signalModel.currentSignal === "EXIT"}
         />
+
+        {/* Feedback overlay */}
+        {feedback.visible && (
+          <div className={`feedback-overlay feedback-${feedback.type}`}>
+            <div className="feedback-message">{feedback.message}</div>
+            {feedback.type === 'perfect' && <div className="feedback-subtitle">Outstanding reflexes!</div>}
+            {feedback.type === 'good' && <div className="feedback-subtitle">Within window</div>}
+            {feedback.type === 'slow' && <div className="feedback-subtitle">Try to be faster</div>}
+            {feedback.type === 'wrong' && <div className="feedback-subtitle">Wrong signal key</div>}
+          </div>
+        )}
       </div>
 
       <div className="footer">

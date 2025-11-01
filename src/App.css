@@ -171,6 +171,41 @@ body {
   display: flex;
   gap: 10px;
   flex: 1;
+  position: relative;
+  transition: background-color 0.15s ease-out;
+}
+
+/* Flash effects */
+.main-content.flash-success {
+  animation: flash-green 0.5s ease-out;
+}
+
+.main-content.flash-error {
+  animation: flash-red 0.5s ease-out;
+}
+
+@keyframes flash-green {
+  0% {
+    background-color: rgba(0, 200, 0, 0);
+  }
+  25% {
+    background-color: rgba(0, 200, 0, 0.15);
+  }
+  100% {
+    background-color: rgba(0, 200, 0, 0);
+  }
+}
+
+@keyframes flash-red {
+  0% {
+    background-color: rgba(255, 60, 60, 0);
+  }
+  25% {
+    background-color: rgba(255, 60, 60, 0.15);
+  }
+  100% {
+    background-color: rgba(255, 60, 60, 0);
+  }
 }
 
 .stats-panel {
@@ -268,5 +303,73 @@ body {
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+/* Feedback overlay */
+.feedback-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  padding: 30px 50px;
+  border-radius: 12px;
+  text-align: center;
+  animation: feedback-appear 0.3s ease-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.feedback-message {
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+}
+
+.feedback-subtitle {
+  font-size: 16px;
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+/* Feedback types */
+.feedback-perfect {
+  background: linear-gradient(135deg, rgba(87, 254, 1, 0.95), rgba(0, 200, 0, 0.95));
+  color: rgb(255, 255, 255);
+  border: 3px solid rgb(87, 254, 1);
+}
+
+.feedback-good {
+  background: linear-gradient(135deg, rgba(0, 200, 0, 0.95), rgba(0, 150, 0, 0.95));
+  color: rgb(255, 255, 255);
+  border: 3px solid rgb(0, 200, 0);
+}
+
+.feedback-slow {
+  background: linear-gradient(135deg, rgba(255, 60, 60, 0.95), rgba(200, 0, 0, 0.95));
+  color: rgb(255, 255, 255);
+  border: 3px solid rgb(255, 60, 60);
+}
+
+.feedback-wrong {
+  background: linear-gradient(135deg, rgba(200, 0, 0, 0.95), rgba(150, 0, 0, 0.95));
+  color: rgb(255, 255, 255);
+  border: 3px solid rgb(200, 0, 0);
+}
+
+@keyframes feedback-appear {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
 }
