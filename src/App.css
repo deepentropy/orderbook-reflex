@@ -74,7 +74,7 @@ body {
   color: rgb(255, 255, 255);
 }
 
-.hotkey-config {
+.settings-panel {
   background: rgb(45, 45, 45);
   border: 2px solid rgb(80, 80, 80);
   border-radius: 6px;
@@ -165,6 +165,156 @@ body {
 
 .config-close:hover {
   background: rgb(70, 70, 70);
+}
+
+/* Settings Sections */
+.settings-section {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgb(60, 60, 60);
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: rgb(87, 254, 1);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Reset Button */
+.reset-btn {
+  width: 100%;
+  background: linear-gradient(135deg, rgb(150, 30, 30), rgb(200, 50, 50));
+  border: 2px solid rgb(255, 80, 80);
+  color: rgb(255, 255, 255);
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(135deg, rgb(180, 40, 40), rgb(230, 60, 60));
+  border-color: rgb(255, 100, 100);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 80, 80, 0.4);
+}
+
+.reset-warning-text {
+  font-size: 10px;
+  color: rgb(180, 180, 180);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Reset Confirmation Modal */
+.reset-confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: challenge-backdrop-appear 0.3s ease-out;
+}
+
+.reset-confirm-content {
+  background: linear-gradient(135deg, rgb(40, 20, 20), rgb(50, 25, 25));
+  border: 3px solid rgb(255, 80, 80);
+  border-radius: 12px;
+  padding: 25px 35px;
+  box-shadow: 0 10px 40px rgba(255, 0, 0, 0.4);
+  animation: challenge-appear 0.3s ease-out;
+  max-width: 500px;
+}
+
+.reset-confirm-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 15px 0;
+  color: rgb(255, 100, 100);
+  text-align: center;
+}
+
+.reset-confirm-text {
+  color: rgb(220, 220, 220);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.reset-confirm-text p {
+  margin: 8px 0;
+}
+
+.reset-confirm-text strong {
+  color: rgb(255, 150, 150);
+  font-size: 15px;
+}
+
+.reset-confirm-text ul {
+  margin: 10px 0;
+  padding-left: 25px;
+}
+
+.reset-confirm-text li {
+  margin: 5px 0;
+  color: rgb(200, 200, 200);
+}
+
+.reset-confirm-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.reset-confirm-cancel {
+  flex: 1;
+  background: rgb(60, 60, 60);
+  border: 2px solid rgb(100, 100, 100);
+  color: rgb(255, 255, 255);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-confirm-cancel:hover {
+  background: rgb(80, 80, 80);
+  border-color: rgb(120, 120, 120);
+}
+
+.reset-confirm-proceed {
+  flex: 1;
+  background: linear-gradient(135deg, rgb(180, 30, 30), rgb(220, 50, 50));
+  border: 2px solid rgb(255, 80, 80);
+  color: rgb(255, 255, 255);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-confirm-proceed:hover {
+  background: linear-gradient(135deg, rgb(200, 40, 40), rgb(240, 60, 60));
+  border-color: rgb(255, 100, 100);
+  box-shadow: 0 4px 12px rgba(255, 80, 80, 0.5);
 }
 
 .main-content {

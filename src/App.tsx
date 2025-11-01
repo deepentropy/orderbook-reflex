@@ -83,7 +83,8 @@ function App() {
   const [lastRt, setLastRt] = useState<number | null>(null);
   const [, setUpdateTrigger] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [showHotkeyConfig, setShowHotkeyConfig] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [hotkeys, setHotkeys] = useState<HotkeyConfig>(() => {
     const saved = localStorage.getItem("hotkeys");
     return saved ? JSON.parse(saved) : { entry: ENTRY_KEY, exit: EXIT_KEY, pause: " " };
@@ -533,6 +534,39 @@ function App() {
     setShowWelcome(false);
   }, []);
 
+  // Handle reset stats
+  const handleResetStats = useCallback(() => {
+    // Clear all localStorage data
+    localStorage.removeItem("allTimeStats");
+    localStorage.removeItem("playerXP");
+    localStorage.removeItem("hotkeys");
+    localStorage.removeItem("challengesEnabled");
+
+    // Reset all state to initial values
+    setAllTimeStats({
+      totalTrades: 0,
+      successfulTrades: 0,
+      bestStreak: 0,
+      fastestReactionTime: null,
+      totalSessions: 0,
+      allReactionTimes: []
+    });
+    setXp(0);
+    setCurrentStreak(0);
+    setHistory([]);
+    setSessionStats({
+      trades: 0,
+      successful: 0,
+      startTime: Date.now()
+    });
+    setHotkeys({ entry: ENTRY_KEY, exit: EXIT_KEY, pause: " " });
+    setChallengesEnabled(true);
+
+    // Close the confirmation dialog
+    setShowResetConfirm(false);
+    setShowSettings(false);
+  }, []);
+
   if (!priceModel) {
     return (
       <div className="loading">
@@ -584,8 +618,8 @@ function App() {
           <button className="control-btn" onClick={togglePause}>
             {isPaused ? "▶ Resume" : "⏸ Pause"}
           </button>
-          <button className="control-btn" onClick={() => setShowHotkeyConfig(!showHotkeyConfig)}>
-            ⚙ Hotkeys
+          <button className="control-btn" onClick={() => setShowSettings(!showSettings)}>
+            ⚙ Settings
           </button>
           <button className="control-btn" onClick={() => setChallengesEnabled(!challengesEnabled)}>
             {challengesEnabled ? "🧠 On" : "🧠 Off"}
@@ -619,38 +653,53 @@ function App() {
         )}
       </div>
 
-      {showHotkeyConfig && (
-        <div className="hotkey-config">
-          <div className="config-header">Configure Hotkeys</div>
-          <div className="config-instruction">Click a button and press a key</div>
-          <div className="config-row">
-            <label>Entry Signal:</label>
-            <button
-              className={`hotkey-record-btn ${recordingKey === 'entry' ? 'recording' : ''}`}
-              onClick={() => setRecordingKey('entry')}
-            >
-              {recordingKey === 'entry' ? 'Press any key...' : hotkeys.entry === ' ' ? 'Space' : hotkeys.entry}
-            </button>
+      {showSettings && (
+        <div className="settings-panel">
+          <div className="config-header">Settings</div>
+
+          <div className="settings-section">
+            <div className="settings-section-title">Hotkeys</div>
+            <div className="config-instruction">Click a button and press a key</div>
+            <div className="config-row">
+              <label>Entry Signal:</label>
+              <button
+                className={`hotkey-record-btn ${recordingKey === 'entry' ? 'recording' : ''}`}
+                onClick={() => setRecordingKey('entry')}
+              >
+                {recordingKey === 'entry' ? 'Press any key...' : hotkeys.entry === ' ' ? 'Space' : hotkeys.entry}
+              </button>
+            </div>
+            <div className="config-row">
+              <label>Exit Signal:</label>
+              <button
+                className={`hotkey-record-btn ${recordingKey === 'exit' ? 'recording' : ''}`}
+                onClick={() => setRecordingKey('exit')}
+              >
+                {recordingKey === 'exit' ? 'Press any key...' : hotkeys.exit === ' ' ? 'Space' : hotkeys.exit}
+              </button>
+            </div>
+            <div className="config-row">
+              <label>Pause/Resume:</label>
+              <button
+                className={`hotkey-record-btn ${recordingKey === 'pause' ? 'recording' : ''}`}
+                onClick={() => setRecordingKey('pause')}
+              >
+                {recordingKey === 'pause' ? 'Press any key...' : hotkeys.pause === ' ' ? 'Space' : hotkeys.pause}
+              </button>
+            </div>
           </div>
-          <div className="config-row">
-            <label>Exit Signal:</label>
-            <button
-              className={`hotkey-record-btn ${recordingKey === 'exit' ? 'recording' : ''}`}
-              onClick={() => setRecordingKey('exit')}
-            >
-              {recordingKey === 'exit' ? 'Press any key...' : hotkeys.exit === ' ' ? 'Space' : hotkeys.exit}
+
+          <div className="settings-section">
+            <div className="settings-section-title">Data Management</div>
+            <button className="reset-btn" onClick={() => setShowResetConfirm(true)}>
+              🗑️ Reset All Stats
             </button>
+            <div className="reset-warning-text">
+              This will reset all progress, XP, and statistics
+            </div>
           </div>
-          <div className="config-row">
-            <label>Pause/Resume:</label>
-            <button
-              className={`hotkey-record-btn ${recordingKey === 'pause' ? 'recording' : ''}`}
-              onClick={() => setRecordingKey('pause')}
-            >
-              {recordingKey === 'pause' ? 'Press any key...' : hotkeys.pause === ' ' ? 'Space' : hotkeys.pause}
-            </button>
-          </div>
-          <button className="config-close" onClick={() => { setShowHotkeyConfig(false); setRecordingKey(null); }}>
+
+          <button className="config-close" onClick={() => { setShowSettings(false); setRecordingKey(null); }}>
             Close
           </button>
         </div>
@@ -753,6 +802,36 @@ function App() {
               <button className="welcome-button" onClick={handleWelcomeClose}>
                 Start Training!
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Reset Confirmation Modal */}
+        {showResetConfirm && (
+          <div className="reset-confirm-modal">
+            <div className="reset-confirm-content">
+              <h2 className="reset-confirm-title">⚠️ Reset All Stats?</h2>
+              <div className="reset-confirm-text">
+                <p><strong>This action cannot be undone!</strong></p>
+                <p>You will lose:</p>
+                <ul>
+                  <li>All XP and level progress ({xp} XP)</li>
+                  <li>All-time statistics ({allTimeStats.totalTrades} total trades)</li>
+                  <li>Current streak ({currentStreak})</li>
+                  <li>Best streak ({allTimeStats.bestStreak})</li>
+                  <li>Session history</li>
+                  <li>Custom hotkeys</li>
+                </ul>
+                <p>Are you sure you want to start fresh?</p>
+              </div>
+              <div className="reset-confirm-buttons">
+                <button className="reset-confirm-cancel" onClick={() => setShowResetConfirm(false)}>
+                  Cancel
+                </button>
+                <button className="reset-confirm-proceed" onClick={handleResetStats}>
+                  Yes, Reset Everything
+                </button>
+              </div>
             </div>
           </div>
         )}
