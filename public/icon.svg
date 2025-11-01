@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1e1e1e" rx="80"/>
+
+  <!-- OrderBook representation - Bid side (left) -->
+  <g id="bid-bars">
+    <!-- Best price (green) -->
+    <rect x="60" y="380" width="140" height="32" fill="#57FE01" rx="4"/>
+    <!-- 2nd best (rose) -->
+    <rect x="60" y="340" width="120" height="32" fill="#FD807F" rx="4"/>
+    <!-- 3rd best (yellow) -->
+    <rect x="60" y="300" width="100" height="32" fill="#FBFE01" rx="4"/>
+    <!-- 4th best (cyan) -->
+    <rect x="60" y="260" width="80" height="32" fill="#03FEF9" rx="4"/>
+  </g>
+
+  <!-- OrderBook representation - Ask side (right) -->
+  <g id="ask-bars">
+    <!-- Best price (green) -->
+    <rect x="312" y="380" width="140" height="32" fill="#57FE01" rx="4"/>
+    <!-- 2nd best (rose) -->
+    <rect x="332" y="340" width="120" height="32" fill="#FD807F" rx="4"/>
+    <!-- 3rd best (yellow) -->
+    <rect x="352" y="300" width="100" height="32" fill="#FBFE01" rx="4"/>
+    <!-- 4th best (cyan) -->
+    <rect x="372" y="260" width="80" height="32" fill="#03FEF9" rx="4"/>
+  </g>
+
+  <!-- Center divider line -->
+  <line x1="256" y1="240" x2="256" y2="420" stroke="#57FE01" stroke-width="4" opacity="0.6"/>
+
+  <!-- Lightning bolt for "reflex" concept -->
+  <g id="lightning">
+    <path d="M 280 80 L 220 200 L 270 200 L 210 350 L 310 180 L 260 180 Z"
+          fill="#57FE01"
+          stroke="#1e1e1e"
+          stroke-width="8"
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Target/crosshair circle -->
+  <circle cx="256" cy="160" r="60" fill="none" stroke="#57FE01" stroke-width="6" opacity="0.4"/>
+  <circle cx="256" cy="160" r="40" fill="none" stroke="#57FE01" stroke-width="4" opacity="0.5"/>
+  <circle cx="256" cy="160" r="20" fill="none" stroke="#57FE01" stroke-width="3" opacity="0.6"/>
+</svg>
