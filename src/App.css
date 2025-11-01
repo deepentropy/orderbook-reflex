@@ -541,15 +541,40 @@ body {
   }
 }
 
-/* Spread Indicator */
-.spread-indicator {
+/* OrderBook Container */
+.orderbook-container {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* Centered Spread Divider */
+.spread-divider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: rgb(30, 30, 30);
-  color: rgb(255, 200, 0);
-  font-size: 10px;
+  border-left: 2px solid rgb(60, 60, 60);
+  border-right: 2px solid rgb(60, 60, 60);
+  min-width: 80px;
+  padding: 10px 8px;
+}
+
+.spread-label {
+  color: rgb(180, 180, 180);
+  font-size: 9px;
   font-weight: bold;
-  padding: 4px 6px;
-  text-align: center;
-  border-bottom: 1px solid rgb(60, 60, 60);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.spread-value {
+  color: rgb(255, 200, 0);
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
 }
 
 /* Welcome Modal */
@@ -571,12 +596,10 @@ body {
   background: linear-gradient(135deg, rgb(30, 30, 30), rgb(40, 40, 40));
   border: 3px solid rgb(87, 254, 1);
   border-radius: 12px;
-  padding: 30px 40px;
+  padding: 25px 35px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
   animation: challenge-appear 0.3s ease-out;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 550px;
 }
 
 .welcome-title {

@@ -14,14 +14,12 @@ interface OrderBookColumnProps {
   quotes: Quote[];
   side: "bid" | "ask";
   highlighted: boolean;
-  spread?: number;
 }
 
 export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
   quotes,
   side,
   highlighted,
-  spread = 0,
 }) => {
   // Sort quotes
   const sortedQuotes =
@@ -52,13 +50,6 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
         border: highlighted ? `3px solid rgb(0, 200, 0)` : "none",
       }}
     >
-      {/* Spread indicator - only show on bid side */}
-      {side === "bid" && spread > 0 && (
-        <div className="spread-indicator">
-          Spread: ${spread.toFixed(3)}
-        </div>
-      )}
-
       <div
         className="column-header"
         style={{

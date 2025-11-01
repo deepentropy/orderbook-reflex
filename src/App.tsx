@@ -668,19 +668,25 @@ function App() {
           sessionStats={sessionStats}
         />
 
-        <OrderBookColumn
-          quotes={priceModel.lastExchangeQuotes}
-          side="bid"
-          highlighted={signalModel.currentSignal === "ENTRY"}
-          spread={spread}
-        />
+        <div className="orderbook-container">
+          <OrderBookColumn
+            quotes={priceModel.lastExchangeQuotes}
+            side="bid"
+            highlighted={signalModel.currentSignal === "ENTRY"}
+          />
 
-        <OrderBookColumn
-          quotes={priceModel.lastExchangeQuotes}
-          side="ask"
-          highlighted={signalModel.currentSignal === "EXIT"}
-          spread={spread}
-        />
+          {/* Centered spread display */}
+          <div className="spread-divider">
+            <div className="spread-label">Spread</div>
+            <div className="spread-value">${spread.toFixed(3)}</div>
+          </div>
+
+          <OrderBookColumn
+            quotes={priceModel.lastExchangeQuotes}
+            side="ask"
+            highlighted={signalModel.currentSignal === "EXIT"}
+          />
+        </div>
 
         {/* Feedback overlay */}
         {feedback.visible && (
@@ -719,49 +725,31 @@ function App() {
         {showWelcome && (
           <div className="welcome-modal">
             <div className="welcome-content">
-              <h2 className="welcome-title">Welcome to OrderBook Reflex Trainer!</h2>
+              <h2 className="welcome-title">🎯 OrderBook Reflex Trainer</h2>
               <div className="welcome-text">
-                <p><strong>🎯 Your Mission:</strong> Train your reflexes to spot and react to orderbook signals.</p>
+                <p><strong>Train your reflexes to spot and react to orderbook signals!</strong></p>
 
                 <div className="welcome-section">
-                  <h3>📊 How It Works:</h3>
+                  <h3>How It Works:</h3>
                   <ul>
-                    <li><strong>Green Border on BID</strong> = Entry signal (PL - Pivot Low). Press <kbd>{hotkeys.entry}</kbd></li>
-                    <li><strong>Green Border on ASK</strong> = Exit signal (PH - Pivot High). Press <kbd>{hotkeys.exit}</kbd></li>
-                    <li>React as fast as possible within the time window!</li>
+                    <li><strong>Green border on BID</strong> → Press <kbd>{hotkeys.entry}</kbd> (Entry/Buy signal)</li>
+                    <li><strong>Green border on ASK</strong> → Press <kbd>{hotkeys.exit}</kbd> (Exit/Sell signal)</li>
+                    <li>Earn XP for fast reactions • Level up to increase difficulty</li>
+                    <li>Test your memory every 10 trades for bonus XP</li>
                   </ul>
                 </div>
 
                 <div className="welcome-section">
-                  <h3>⚡ Level System:</h3>
+                  <h3>💡 Quick Tips:</h3>
                   <ul>
-                    <li>Earn XP for successful reactions (1-5 XP based on speed)</li>
-                    <li>Progress through 6 difficulty levels (Novice → Master)</li>
-                    <li>Higher levels = shorter reaction windows = more XP</li>
-                  </ul>
-                </div>
-
-                <div className="welcome-section">
-                  <h3>🧠 Memory Challenges:</h3>
-                  <ul>
-                    <li>Every 10 trades, test your price memory (+10 XP bonus!)</li>
-                    <li>Toggle challenges on/off with the <strong>🧠</strong> button</li>
-                  </ul>
-                </div>
-
-                <div className="welcome-section">
-                  <h3>💡 Tips:</h3>
-                  <ul>
-                    <li>Watch the <strong>Spread</strong> indicator between bid and ask</li>
-                    <li>Notice the color coding: Green (best) → Rose → Yellow → Cyan</li>
-                    <li>Track your improvement via streak counter and stats</li>
-                    <li>Customize hotkeys in settings (⚙️ button)</li>
+                    <li>Track your <strong>Streak</strong> and <strong>Success Rate</strong> in the stats panel</li>
+                    <li>Customize controls with ⚙️ • Toggle challenges with 🧠 • Pause with Space</li>
                   </ul>
                 </div>
               </div>
 
               <button className="welcome-button" onClick={handleWelcomeClose}>
-                Let's Start Training!
+                Start Training!
               </button>
             </div>
           </div>
