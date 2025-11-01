@@ -569,9 +569,8 @@ body {
 
 .spread-row .spread-value {
   color: rgb(255, 200, 0);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: bold;
-  font-family: 'Courier New', monospace;
 }
 
 /* OrderBook Columns Container */
