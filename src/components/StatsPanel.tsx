@@ -19,12 +19,29 @@ interface Stats {
   successfulTrades: number;
 }
 
+interface AllTimeStats {
+  totalTrades: number;
+  successfulTrades: number;
+  bestStreak: number;
+  fastestReactionTime: number | null;
+  totalSessions: number;
+}
+
+interface SessionStats {
+  trades: number;
+  successful: number;
+  startTime: number;
+}
+
 interface StatsPanelProps {
   reactionWindow: number;
   lastRt: number | null;
   history: HistoryEntry[];
   maxHistoryRows?: number; // Not used anymore but kept for compatibility
   stats: Stats;
+  currentStreak: number;
+  allTimeStats: AllTimeStats;
+  sessionStats: SessionStats;
 }
 
 export const StatsPanel: React.FC<StatsPanelProps> = ({
@@ -32,6 +49,9 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
   lastRt,
   history,
   stats,
+  currentStreak,
+  allTimeStats,
+  sessionStats,
 }) => {
   // Prepare data for graph - last 20 entries
   const graphData = history.slice(-20);
@@ -43,6 +63,31 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
   const padding = { top: 10, right: 10, bottom: 20, left: 30 };
   const plotWidth = graphWidth - padding.left - padding.right;
   const plotHeight = graphHeight - padding.top - padding.bottom;
+
+  // Calculate moving average for trend line (simple moving average of 5)
+  const calculateTrendLine = () => {
+    if (graphData.length < 2) return [];
+
+    const windowSize = Math.min(5, Math.floor(graphData.length / 2));
+    const trendPoints: { x: number; y: number }[] = [];
+
+    for (let i = 0; i < graphData.length; i++) {
+      const start = Math.max(0, i - Math.floor(windowSize / 2));
+      const end = Math.min(graphData.length, i + Math.ceil(windowSize / 2));
+      const slice = graphData.slice(start, end);
+      const avg = slice.reduce((sum, entry) => sum + entry.rt, 0) / slice.length;
+
+      const x = padding.left + (i / Math.max(graphData.length - 1, 1)) * (plotWidth - Math.max(plotWidth / Math.max(graphData.length, 20) - 1, 3));
+      const normalizedAvg = Math.min(avg, maxDisplayTime);
+      const y = padding.top + plotHeight - (normalizedAvg / maxDisplayTime) * plotHeight;
+
+      trendPoints.push({ x, y });
+    }
+
+    return trendPoints;
+  };
+
+  const trendLine = calculateTrendLine();
 
   return (
     <div className="stats-panel">
@@ -98,6 +143,49 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
             ${stats.avgPriceDiff.toFixed(3)}
           </span>
         </div>
+
+        {/* Streak Counter */}
+        {currentStreak > 0 && (
+          <div className="stat-item streak-item">
+            <span className="stat-label">Streak:</span>
+            <span className="streak-value">
+              🔥 {currentStreak}
+            </span>
+          </div>
+        )}
+
+        {/* Session vs All-Time */}
+        <div className="stats-divider">Session vs All-Time</div>
+
+        <div className="stat-item">
+          <span className="stat-label">Session:</span>
+          <span style={{ color: "rgb(200, 200, 200)", fontSize: "10px" }}>
+            {sessionStats.successful}/{sessionStats.trades}
+          </span>
+        </div>
+
+        <div className="stat-item">
+          <span className="stat-label">All-Time:</span>
+          <span style={{ color: "rgb(200, 200, 200)", fontSize: "10px" }}>
+            {allTimeStats.successfulTrades}/{allTimeStats.totalTrades}
+          </span>
+        </div>
+
+        <div className="stat-item">
+          <span className="stat-label">Best Streak:</span>
+          <span style={{ color: "rgb(255, 200, 0)", fontSize: "10px" }}>
+            {allTimeStats.bestStreak}
+          </span>
+        </div>
+
+        {allTimeStats.fastestReactionTime !== null && (
+          <div className="stat-item">
+            <span className="stat-label">Fastest:</span>
+            <span style={{ color: "rgb(87, 254, 1)", fontSize: "10px" }}>
+              {(allTimeStats.fastestReactionTime * 1000).toFixed(0)}ms
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="graph-section">
@@ -169,6 +257,17 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
               />
             );
           })}
+
+          {/* Trend line - moving average */}
+          {trendLine.length > 1 && (
+            <polyline
+              points={trendLine.map(p => `${p.x},${p.y}`).join(' ')}
+              fill="none"
+              stroke="rgb(3, 254, 249)"
+              strokeWidth={2}
+              opacity={0.9}
+            />
+          )}
 
           {/* X-axis label */}
           <text

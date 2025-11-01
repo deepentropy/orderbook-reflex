@@ -29,6 +29,21 @@ interface FeedbackState {
   visible: boolean;
 }
 
+interface AllTimeStats {
+  totalTrades: number;
+  successfulTrades: number;
+  bestStreak: number;
+  fastestReactionTime: number | null;
+  totalSessions: number;
+  allReactionTimes: number[];
+}
+
+interface SessionStats {
+  trades: number;
+  successful: number;
+  startTime: number;
+}
+
 function App() {
   const [priceModel, setPriceModel] = useState<PriceModel | null>(null);
   const [signalModel] = useState<SignalModel>(() => new SignalModel());
@@ -44,6 +59,23 @@ function App() {
   const [recordingKey, setRecordingKey] = useState<'entry' | 'exit' | 'pause' | null>(null);
   const [feedback, setFeedback] = useState<FeedbackState>({ message: '', type: null, visible: false });
   const [flashEffect, setFlashEffect] = useState<'success' | 'error' | null>(null);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [allTimeStats, setAllTimeStats] = useState<AllTimeStats>(() => {
+    const saved = localStorage.getItem("allTimeStats");
+    return saved ? JSON.parse(saved) : {
+      totalTrades: 0,
+      successfulTrades: 0,
+      bestStreak: 0,
+      fastestReactionTime: null,
+      totalSessions: 0,
+      allReactionTimes: []
+    };
+  });
+  const [sessionStats, setSessionStats] = useState<SessionStats>({
+    trades: 0,
+    successful: 0,
+    startTime: Date.now()
+  });
 
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
@@ -84,6 +116,19 @@ function App() {
   useEffect(() => {
     localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
   }, [hotkeys]);
+
+  // Save all-time stats to localStorage
+  useEffect(() => {
+    localStorage.setItem("allTimeStats", JSON.stringify(allTimeStats));
+  }, [allTimeStats]);
+
+  // Increment session count on mount
+  useEffect(() => {
+    setAllTimeStats(prev => ({
+      ...prev,
+      totalSessions: prev.totalSessions + 1
+    }));
+  }, []);
 
   // Toggle pause
   const togglePause = useCallback(() => {
@@ -177,8 +222,39 @@ function App() {
 
       setHistory((prev) => [...prev.slice(-49), newEntry]);
       setLastRt(rt);
+
+      // Update streak
+      if (ok) {
+        setCurrentStreak(prev => prev + 1);
+      } else {
+        setCurrentStreak(0);
+      }
+
+      // Update session stats
+      setSessionStats(prev => ({
+        ...prev,
+        trades: prev.trades + 1,
+        successful: prev.successful + (ok ? 1 : 0)
+      }));
+
+      // Update all-time stats
+      setAllTimeStats(prev => {
+        const newStreak = ok ? currentStreak + 1 : 0;
+        const newReactionTimes = [...prev.allReactionTimes, rt].slice(-1000); // Keep last 1000
+
+        return {
+          ...prev,
+          totalTrades: prev.totalTrades + 1,
+          successfulTrades: prev.successfulTrades + (ok ? 1 : 0),
+          bestStreak: Math.max(prev.bestStreak, newStreak),
+          fastestReactionTime: prev.fastestReactionTime === null
+            ? rt
+            : Math.min(prev.fastestReactionTime, rt),
+          allReactionTimes: newReactionTimes
+        };
+      });
     },
-    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback]
+    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback, currentStreak]
   );
 
   // Setup keyboard listener
@@ -318,6 +394,9 @@ function App() {
           history={history}
           maxHistoryRows={10}
           stats={stats}
+          currentStreak={currentStreak}
+          allTimeStats={allTimeStats}
+          sessionStats={sessionStats}
         />
 
         <OrderBookColumn
