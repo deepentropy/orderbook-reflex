@@ -669,23 +669,25 @@ function App() {
         />
 
         <div className="orderbook-container">
-          <OrderBookColumn
-            quotes={priceModel.lastExchangeQuotes}
-            side="bid"
-            highlighted={signalModel.currentSignal === "ENTRY"}
-          />
-
-          {/* Centered spread display */}
-          <div className="spread-divider">
-            <div className="spread-label">Spread</div>
-            <div className="spread-value">${spread.toFixed(3)}</div>
+          {/* Shared spread row above both columns */}
+          <div className="spread-row">
+            <span className="spread-label">Spread:</span>
+            <span className="spread-value">${spread.toFixed(3)}</span>
           </div>
 
-          <OrderBookColumn
-            quotes={priceModel.lastExchangeQuotes}
-            side="ask"
-            highlighted={signalModel.currentSignal === "EXIT"}
-          />
+          <div className="orderbook-columns">
+            <OrderBookColumn
+              quotes={priceModel.lastExchangeQuotes}
+              side="bid"
+              highlighted={signalModel.currentSignal === "ENTRY"}
+            />
+
+            <OrderBookColumn
+              quotes={priceModel.lastExchangeQuotes}
+              side="ask"
+              highlighted={signalModel.currentSignal === "EXIT"}
+            />
+          </div>
         </div>
 
         {/* Feedback overlay */}
