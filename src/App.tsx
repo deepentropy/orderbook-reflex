@@ -1,6 +1,7 @@
 // App.tsx - Main application component
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { StatsPanel } from "./components/StatsPanel";
 import { OrderBookColumn } from "./components/OrderBookColumn";
 import { PriceModel } from "./models/PriceModel";
@@ -68,15 +69,16 @@ interface MemoryChallenge {
 }
 
 const DIFFICULTY_LEVELS: DifficultyLevel[] = [
-  { name: 'Novice', baseWindow: 1.5, xpRequired: 0, color: 'rgb(150, 150, 150)' },
-  { name: 'Beginner', baseWindow: 1.0, xpRequired: 50, color: 'rgb(100, 200, 100)' },
-  { name: 'Intermediate', baseWindow: 0.7, xpRequired: 150, color: 'rgb(100, 150, 255)' },
-  { name: 'Advanced', baseWindow: 0.5, xpRequired: 300, color: 'rgb(200, 100, 255)' },
-  { name: 'Expert', baseWindow: 0.3, xpRequired: 500, color: 'rgb(255, 200, 50)' },
-  { name: 'Master', baseWindow: 0.2, xpRequired: 800, color: 'rgb(255, 100, 100)' },
+  { name: 'difficulty.novice', baseWindow: 1.5, xpRequired: 0, color: 'rgb(150, 150, 150)' },
+  { name: 'difficulty.beginner', baseWindow: 1.0, xpRequired: 50, color: 'rgb(100, 200, 100)' },
+  { name: 'difficulty.intermediate', baseWindow: 0.7, xpRequired: 150, color: 'rgb(100, 150, 255)' },
+  { name: 'difficulty.advanced', baseWindow: 0.5, xpRequired: 300, color: 'rgb(200, 100, 255)' },
+  { name: 'difficulty.expert', baseWindow: 0.3, xpRequired: 500, color: 'rgb(255, 200, 50)' },
+  { name: 'difficulty.master', baseWindow: 0.2, xpRequired: 800, color: 'rgb(255, 100, 100)' },
 ];
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [priceModel, setPriceModel] = useState<PriceModel | null>(null);
   const [signalModel] = useState<SignalModel>(() => new SignalModel());
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -357,7 +359,7 @@ function App() {
 
       // Determine feedback type
       if (!correctKey) {
-        showFeedback('WRONG KEY!', 'wrong');
+        showFeedback(t('feedback.wrongKey'), 'wrong');
         return; // Don't record wrong key presses
       }
 
@@ -365,11 +367,11 @@ function App() {
 
       // Show feedback based on reaction time
       if (rt <= signalModel.reactionWindow * 0.5) {
-        showFeedback('PERFECT!', 'perfect');
+        showFeedback(t('feedback.perfect'), 'perfect');
       } else if (rt <= signalModel.reactionWindow) {
-        showFeedback('GOOD!', 'good');
+        showFeedback(t('feedback.good'), 'good');
       } else {
-        showFeedback('TOO SLOW!', 'slow');
+        showFeedback(t('feedback.tooSlow'), 'slow');
       }
 
       const newEntry: HistoryEntry = {
@@ -613,17 +615,26 @@ function App() {
   return (
     <div className="app">
       <div className="header">
-        <h1 className="title">OrderBook Reflex Trainer</h1>
+        <h1 className="title">{t('app.title')}</h1>
         <div className="controls">
           <button className="control-btn" onClick={togglePause}>
-            {isPaused ? "▶ Resume" : "⏸ Pause"}
+            {isPaused ? `▶ ${t('app.resume')}` : `⏸ ${t('app.pause')}`}
           </button>
           <button className="control-btn" onClick={() => setShowSettings(!showSettings)}>
-            ⚙ Settings
+            ⚙ {t('app.settings')}
           </button>
           <button className="control-btn" onClick={() => setChallengesEnabled(!challengesEnabled)}>
-            {challengesEnabled ? "🧠 On" : "🧠 Off"}
+            {challengesEnabled ? `${t('app.memoryChallenge')} On` : `${t('app.memoryChallenge')} Off`}
           </button>
+          <select
+            className="language-selector"
+            value={i18n.language.split('-')[0]}
+            onChange={(e) => i18n.changeLanguage(e.target.value)}
+          >
+            <option value="en">🇺🇸 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="fr">🇫🇷 FR</option>
+          </select>
         </div>
       </div>
 
@@ -631,7 +642,7 @@ function App() {
       <div className="difficulty-bar">
         <div className="difficulty-info">
           <span className="level-name" style={{ color: currentLevel.color }}>
-            {currentLevel.name}
+            {t(currentLevel.name)}
           </span>
           <span className="level-xp">
             {xp} XP {nextLevel && `/ ${nextLevel.xpRequired} XP`}
@@ -655,13 +666,13 @@ function App() {
 
       {showSettings && (
         <div className="settings-panel">
-          <div className="config-header">Settings</div>
+          <div className="config-header">{t('settings.title')}</div>
 
           <div className="settings-section">
-            <div className="settings-section-title">Hotkeys</div>
+            <div className="settings-section-title">{t('settings.hotkeys')}</div>
             <div className="config-instruction">Click a button and press a key</div>
             <div className="config-row">
-              <label>Entry Signal:</label>
+              <label>{t('settings.entrySignal')}</label>
               <button
                 className={`hotkey-record-btn ${recordingKey === 'entry' ? 'recording' : ''}`}
                 onClick={() => setRecordingKey('entry')}
@@ -670,7 +681,7 @@ function App() {
               </button>
             </div>
             <div className="config-row">
-              <label>Exit Signal:</label>
+              <label>{t('settings.exitSignal')}</label>
               <button
                 className={`hotkey-record-btn ${recordingKey === 'exit' ? 'recording' : ''}`}
                 onClick={() => setRecordingKey('exit')}
@@ -679,7 +690,7 @@ function App() {
               </button>
             </div>
             <div className="config-row">
-              <label>Pause/Resume:</label>
+              <label>{t('settings.pauseResume')}</label>
               <button
                 className={`hotkey-record-btn ${recordingKey === 'pause' ? 'recording' : ''}`}
                 onClick={() => setRecordingKey('pause')}
@@ -690,9 +701,9 @@ function App() {
           </div>
 
           <div className="settings-section">
-            <div className="settings-section-title">Data Management</div>
+            <div className="settings-section-title">{t('settings.dataManagement')}</div>
             <button className="reset-btn" onClick={() => setShowResetConfirm(true)}>
-              🗑️ Reset All Stats
+              🗑️ {t('settings.resetAllStats')}
             </button>
             <div className="reset-warning-text">
               This will reset all progress, XP, and statistics
@@ -700,7 +711,7 @@ function App() {
           </div>
 
           <button className="config-close" onClick={() => { setShowSettings(false); setRecordingKey(null); }}>
-            Close
+            {t('settings.close')}
           </button>
         </div>
       )}
@@ -776,31 +787,29 @@ function App() {
         {showWelcome && (
           <div className="welcome-modal">
             <div className="welcome-content">
-              <h2 className="welcome-title">🎯 OrderBook Reflex Trainer</h2>
+              <h2 className="welcome-title">🎯 {t('welcome.title')}</h2>
               <div className="welcome-text">
-                <p><strong>Train your reflexes to spot and react to orderbook signals!</strong></p>
-
                 <div className="welcome-section">
-                  <h3>How It Works:</h3>
+                  <h3>{t('welcome.howItWorks')}</h3>
                   <ul>
-                    <li><strong>Green border on BID</strong> → Press <kbd>{hotkeys.entry}</kbd> (Entry/Buy signal)</li>
-                    <li><strong>Green border on ASK</strong> → Press <kbd>{hotkeys.exit}</kbd> (Exit/Sell signal)</li>
+                    <li><strong>{t('orderBook.bid')}</strong> → Press <kbd>{hotkeys.entry}</kbd> (Entry/Buy signal)</li>
+                    <li><strong>{t('orderBook.ask')}</strong> → Press <kbd>{hotkeys.exit}</kbd> (Exit/Sell signal)</li>
                     <li>Earn XP for fast reactions • Level up to increase difficulty</li>
                     <li>Test your memory every 10 trades for bonus XP</li>
                   </ul>
                 </div>
 
                 <div className="welcome-section">
-                  <h3>💡 Quick Tips:</h3>
+                  <h3>{t('welcome.quickTips')}</h3>
                   <ul>
-                    <li>Track your <strong>Streak</strong> and <strong>Success Rate</strong> in the stats panel</li>
+                    <li>Track your <strong>{t('stats.streak')}</strong> and <strong>{t('stats.success')}</strong> in the stats panel</li>
                     <li>Customize controls with ⚙️ • Toggle challenges with 🧠 • Pause with Space</li>
                   </ul>
                 </div>
               </div>
 
               <button className="welcome-button" onClick={handleWelcomeClose}>
-                Start Training!
+                {t('welcome.startButton')}
               </button>
             </div>
           </div>
@@ -810,9 +819,9 @@ function App() {
         {showResetConfirm && (
           <div className="reset-confirm-modal">
             <div className="reset-confirm-content">
-              <h2 className="reset-confirm-title">⚠️ Reset All Stats?</h2>
+              <h2 className="reset-confirm-title">⚠️ {t('resetModal.title')}</h2>
               <div className="reset-confirm-text">
-                <p><strong>This action cannot be undone!</strong></p>
+                <p><strong>{t('resetModal.message')}</strong></p>
                 <p>You will lose:</p>
                 <ul>
                   <li>All XP and level progress ({xp} XP)</li>
@@ -822,14 +831,13 @@ function App() {
                   <li>Session history</li>
                   <li>Custom hotkeys</li>
                 </ul>
-                <p>Are you sure you want to start fresh?</p>
               </div>
               <div className="reset-confirm-buttons">
                 <button className="reset-confirm-cancel" onClick={() => setShowResetConfirm(false)}>
-                  Cancel
+                  {t('resetModal.cancel')}
                 </button>
                 <button className="reset-confirm-proceed" onClick={handleResetStats}>
-                  Yes, Reset Everything
+                  {t('resetModal.confirm')}
                 </button>
               </div>
             </div>
@@ -840,7 +848,7 @@ function App() {
       <div className="footer">
         <div className="help-text">
           {isPaused ? (
-            <span className="paused-text">PAUSED - Press {hotkeys.pause === " " ? "Space" : hotkeys.pause} to resume</span>
+            <span className="paused-text">{t('footer.paused', { key: hotkeys.pause === " " ? "Space" : hotkeys.pause })}</span>
           ) : (
             <>Press {hotkeys.entry} on PL (Entry) / {hotkeys.exit} on PH (Exit) | {hotkeys.pause === " " ? "Space" : hotkeys.pause} to pause</>
           )}

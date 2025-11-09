@@ -1,6 +1,7 @@
 // StatsPanel.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { SIGNAL_COLOR, ERROR_COLOR } from "../constants";
 
 interface HistoryEntry {
@@ -53,6 +54,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
   allTimeStats,
   sessionStats,
 }) => {
+  const { t } = useTranslation();
   // Prepare data for graph - last 20 entries
   const graphData = history.slice(-20);
   const maxDisplayTime = Math.max(reactionWindow * 1.5, 0.5); // Show at least 500ms
@@ -93,7 +95,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
     <div className="stats-panel">
       <div className="stats-section">
         <div className="stat-item">
-          <span className="stat-label">Window:</span>
+          <span className="stat-label">{t('stats.window')}</span>
           <span style={{ color: SIGNAL_COLOR }}>
             {(reactionWindow * 1000).toFixed(0)}ms
           </span>
@@ -101,7 +103,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
 
         {lastRt !== null && (
           <div className="stat-item">
-            <span className="stat-label">Last RT:</span>
+            <span className="stat-label">{t('stats.lastRT')}</span>
             <span
               style={{
                 color: lastRt <= reactionWindow ? SIGNAL_COLOR : ERROR_COLOR,
@@ -113,14 +115,14 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
         )}
 
         <div className="stat-item">
-          <span className="stat-label">Avg RT:</span>
+          <span className="stat-label">{t('stats.avgRT')}</span>
           <span style={{ color: SIGNAL_COLOR }}>
             {(stats.avgReactionTime * 1000).toFixed(0)}ms
           </span>
         </div>
 
         <div className="stat-item">
-          <span className="stat-label">Success:</span>
+          <span className="stat-label">{t('stats.success')}</span>
           <span
             style={{
               color: stats.successRate >= 80 ? SIGNAL_COLOR : stats.successRate >= 50 ? "rgb(255, 200, 0)" : ERROR_COLOR,
@@ -131,14 +133,14 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
         </div>
 
         <div className="stat-item">
-          <span className="stat-label">Trades:</span>
+          <span className="stat-label">{t('stats.trades')}</span>
           <span style={{ color: "rgb(255, 255, 255)" }}>
             {stats.successfulTrades}/{stats.totalTrades}
           </span>
         </div>
 
         <div className="stat-item">
-          <span className="stat-label">Avg Diff:</span>
+          <span className="stat-label">{t('stats.avgDiff')}</span>
           <span style={{ color: "rgb(255, 255, 255)" }}>
             ${stats.avgPriceDiff.toFixed(3)}
           </span>
@@ -147,7 +149,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
         {/* Streak Counter */}
         {currentStreak > 0 && (
           <div className="stat-item streak-item">
-            <span className="stat-label">Streak:</span>
+            <span className="stat-label">{t('stats.streak')}</span>
             <span className="streak-value">
               🔥 {currentStreak}
             </span>
@@ -155,24 +157,24 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
         )}
 
         {/* Session vs All-Time */}
-        <div className="stats-divider">Session vs All-Time</div>
+        <div className="stats-divider">{t('stats.sessionVsAllTime')}</div>
 
         <div className="stat-item">
-          <span className="stat-label">Session:</span>
+          <span className="stat-label">{t('stats.session')}</span>
           <span style={{ color: "rgb(200, 200, 200)", fontSize: "10px" }}>
             {sessionStats.successful}/{sessionStats.trades}
           </span>
         </div>
 
         <div className="stat-item">
-          <span className="stat-label">All-Time:</span>
+          <span className="stat-label">{t('stats.allTime')}</span>
           <span style={{ color: "rgb(200, 200, 200)", fontSize: "10px" }}>
             {allTimeStats.successfulTrades}/{allTimeStats.totalTrades}
           </span>
         </div>
 
         <div className="stat-item">
-          <span className="stat-label">Best Streak:</span>
+          <span className="stat-label">{t('stats.bestStreak')}</span>
           <span style={{ color: "rgb(255, 200, 0)", fontSize: "10px" }}>
             {allTimeStats.bestStreak}
           </span>
@@ -180,7 +182,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
 
         {allTimeStats.fastestReactionTime !== null && (
           <div className="stat-item">
-            <span className="stat-label">Fastest:</span>
+            <span className="stat-label">{t('stats.fastest')}</span>
             <span style={{ color: "rgb(87, 254, 1)", fontSize: "10px" }}>
               {(allTimeStats.fastestReactionTime * 1000).toFixed(0)}ms
             </span>
@@ -189,7 +191,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
       </div>
 
       <div className="graph-section">
-        <div className="graph-header">Reaction Time History</div>
+        <div className="graph-header">{t('stats.reactionTimeHistory')}</div>
         <svg className="rt-graph" width={graphWidth} height={graphHeight}>
           {/* Y-axis labels */}
           <text x={5} y={padding.top + 5} fontSize={9} fill="rgb(180, 180, 180)">
@@ -277,7 +279,7 @@ export const StatsPanel: React.FC<StatsPanelProps> = ({
             fill="rgb(180, 180, 180)"
             textAnchor="middle"
           >
-            Last {graphData.length} trades
+            {t('stats.lastNTrades', { count: graphData.length })}
           </text>
         </svg>
       </div>

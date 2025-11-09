@@ -66,6 +66,29 @@ body {
   transform: translateY(0);
 }
 
+.language-selector {
+  background: linear-gradient(135deg, rgb(60, 60, 60), rgb(45, 45, 45));
+  border: 1px solid rgb(80, 80, 80);
+  color: rgb(255, 255, 255);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: Arial, sans-serif;
+}
+
+.language-selector:hover {
+  background: linear-gradient(135deg, rgb(70, 70, 70), rgb(55, 55, 55));
+  border-color: rgb(100, 100, 100);
+}
+
+.language-selector option {
+  background: rgb(45, 45, 45);
+  color: rgb(255, 255, 255);
+}
+
 .loading {
   display: flex;
   justify-content: center;
