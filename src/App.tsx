@@ -792,18 +792,18 @@ function App() {
                 <div className="welcome-section">
                   <h3>{t('welcome.howItWorks')}</h3>
                   <ul>
-                    <li><strong>{t('orderBook.bid')}</strong> → Press <kbd>{hotkeys.entry}</kbd> (Entry/Buy signal)</li>
-                    <li><strong>{t('orderBook.ask')}</strong> → Press <kbd>{hotkeys.exit}</kbd> (Exit/Sell signal)</li>
-                    <li>Earn XP for fast reactions • Level up to increase difficulty</li>
-                    <li>Test your memory every 10 trades for bonus XP</li>
+                    <li><strong>{t('orderBook.bid')}</strong> → Press <kbd>{hotkeys.entry}</kbd> ({t('welcome.entryBuySignal')})</li>
+                    <li><strong>{t('orderBook.ask')}</strong> → Press <kbd>{hotkeys.exit}</kbd> ({t('welcome.exitSellSignal')})</li>
+                    <li>{t('welcome.earnXP')}</li>
+                    <li>{t('welcome.testMemory')}</li>
                   </ul>
                 </div>
 
                 <div className="welcome-section">
                   <h3>{t('welcome.quickTips')}</h3>
                   <ul>
-                    <li>Track your <strong>{t('stats.streak')}</strong> and <strong>{t('stats.success')}</strong> in the stats panel</li>
-                    <li>Customize controls with ⚙️ • Toggle challenges with 🧠 • Pause with Space</li>
+                    <li>{t('welcome.trackStats', { streak: t('stats.streak'), success: t('stats.success') })}</li>
+                    <li>{t('welcome.customizeControls')}</li>
                   </ul>
                 </div>
               </div>

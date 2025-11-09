@@ -15,12 +15,18 @@
     "instruction4": "Attendez le Signal de Sortie (bordures rouges clignotantes + son)",
     "instruction5": "Appuyez sur S (Vendre) lorsque vous repérez la meilleure demande (côté ASK, prix rouge le plus bas)",
     "instruction6": "Suivez votre temps de réaction et défiez-vous !",
+    "entryBuySignal": "Signal d'Entrée/Achat",
+    "exitSellSignal": "Signal de Sortie/Vente",
+    "earnXP": "Gagnez des XP pour des réactions rapides • Montez de niveau pour augmenter la difficulté",
+    "testMemory": "Testez votre mémoire toutes les 10 opérations pour des XP bonus",
     "quickTips": "💡 Conseils Rapides :",
     "tip1": "Concentrez-vous sur la colonne Prix - c'est ce qui compte le plus",
     "tip2": "Vert = BID (acheteurs), Rouge = ASK (vendeurs)",
     "tip3": "Meilleure offre = prix vert le plus élevé sur tous les échanges",
     "tip4": "Meilleure demande = prix rouge le plus bas sur tous les échanges",
     "tip5": "Les temps de réaction inférieurs à 2 secondes sont excellents !",
+    "trackStats": "Suivez votre {{streak}} et {{success}} dans le panneau de statistiques",
+    "customizeControls": "Personnalisez les contrôles avec ⚙️ • Basculez les défis avec 🧠 • Pause avec Espace",
     "startButton": "Commencer l'Entraînement !"
   },
   "settings": {
