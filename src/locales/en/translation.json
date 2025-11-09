@@ -25,7 +25,7 @@
     "tip3": "Best bid = highest green price across all exchanges",
     "tip4": "Best ask = lowest red price across all exchanges",
     "tip5": "Reaction times under 2 seconds are excellent!",
-    "trackStats": "Track your {{streak}} and {{success}} in the stats panel",
+    "trackStats": "Track your Streak and Success in the stats panel",
     "customizeControls": "Customize controls with ⚙️ • Toggle challenges with 🧠 • Pause with Space",
     "startButton": "Start Training!"
   },
