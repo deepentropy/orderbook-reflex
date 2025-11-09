@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Entraîneur de Réflexes OrderBook",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "settings": "Paramètres",
+    "memoryChallenge": "🧠 Défi Mémoire"
+  },
+  "welcome": {
+    "title": "Entraîneur de Réflexes OrderBook",
+    "howItWorks": "Comment ça marche :",
+    "instruction1": "Observez plusieurs carnets d'ordres d'échanges se mettre à jour en temps réel",
+    "instruction2": "Attendez le Signal d'Entrée (bordures vertes clignotantes + son)",
+    "instruction3": "Appuyez sur Q lorsque vous repérez la meilleure offre (côté BID, prix vert le plus élevé)",
+    "instruction4": "Attendez le Signal de Sortie (bordures rouges clignotantes + son)",
+    "instruction5": "Appuyez sur P lorsque vous repérez la meilleure demande (côté ASK, prix rouge le plus bas)",
+    "instruction6": "Suivez votre temps de réaction et défiez-vous !",
+    "quickTips": "💡 Conseils Rapides :",
+    "tip1": "Concentrez-vous sur la colonne Prix - c'est ce qui compte le plus",
+    "tip2": "Vert = BID (acheteurs), Rouge = ASK (vendeurs)",
+    "tip3": "Meilleure offre = prix vert le plus élevé sur tous les échanges",
+    "tip4": "Meilleure demande = prix rouge le plus bas sur tous les échanges",
+    "tip5": "Les temps de réaction inférieurs à 2 secondes sont excellents !",
+    "startButton": "Commencer l'Entraînement !"
+  },
+  "settings": {
+    "title": "⚙️ Paramètres",
+    "hotkeys": "Raccourcis Clavier",
+    "entrySignal": "Signal d'Entrée",
+    "exitSignal": "Signal de Sortie",
+    "pauseResume": "Pause/Reprendre",
+    "dataManagement": "Gestion des Données",
+    "resetAllStats": "Réinitialiser Toutes les Statistiques",
+    "close": "Fermer"
+  },
+  "difficulty": {
+    "novice": "Novice",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé",
+    "expert": "Expert",
+    "master": "Maître"
+  },
+  "feedback": {
+    "wrongKey": "MAUVAISE TOUCHE !",
+    "perfect": "PARFAIT !",
+    "good": "BIEN !",
+    "tooSlow": "TROP LENT !",
+    "correct": "CORRECT ! +10 XP"
+  },
+  "memoryChallenge": {
+    "title": "🧠 Défi de Mémoire des Prix",
+    "question1": "Quel était le meilleur prix d'offre ?",
+    "question2": "Quel était le meilleur prix de demande ?",
+    "question3": "Quel échange avait la meilleure offre ?",
+    "question4": "Quel échange avait la meilleure demande ?",
+    "submit": "Soumettre",
+    "skip": "Passer",
+    "correct": "Correct !",
+    "wrong": "Incorrect !",
+    "score": "Score"
+  },
+  "stats": {
+    "window": "Fenêtre :",
+    "lastRT": "Dernier TR :",
+    "avgRT": "TR Moyen :",
+    "success": "Succès :",
+    "trades": "Opérations :",
+    "avgDiff": "Diff. Moyenne :",
+    "streak": "Série :",
+    "sessionVsAllTime": "Session vs Tout Temps",
+    "session": "Session :",
+    "allTime": "Tout Temps :",
+    "bestStreak": "Meilleure Série :",
+    "fastest": "Plus Rapide :",
+    "reactionTimeHistory": "Historique du Temps de Réaction",
+    "lastNTrades": "{{count}} dernières opérations"
+  },
+  "orderBook": {
+    "bid": "OFFRE",
+    "ask": "DEMANDE",
+    "maker": "Créateur",
+    "price": "Prix",
+    "size": "Taille"
+  },
+  "footer": {
+    "paused": "EN PAUSE - Appuyez sur {{key}} pour reprendre",
+    "entryHint": "Appuyez sur {{key}} sur {{side}} (Entrée)",
+    "exitHint": "Appuyez sur {{key}} sur {{side}} (Sortie)",
+    "or": "ou"
+  },
+  "resetModal": {
+    "title": "Réinitialiser Toutes les Statistiques ?",
+    "message": "Cela supprimera définitivement tous vos progrès, temps de réaction et statistiques. Cette action ne peut pas être annulée.",
+    "confirm": "Oui, Tout Réinitialiser",
+    "cancel": "Annuler"
+  }
+}

@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslation from './locales/en/translation.json';
 import esTranslation from './locales/es/translation.json';
+import frTranslation from './locales/fr/translation.json';
 
 const resources = {
   en: {
@@ -11,6 +12,9 @@ const resources = {
   },
   es: {
     translation: esTranslation
+  },
+  fr: {
+    translation: frTranslation
   }
 };
 
@@ -20,13 +24,16 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
+    supportedLngs: ['en', 'es', 'fr'],
+    nonExplicitSupportedLngs: true,
     debug: false,
     interpolation: {
       escapeValue: false // React already escapes values
     },
     detection: {
       order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng'
     }
   });
 

@@ -628,11 +628,12 @@ function App() {
           </button>
           <select
             className="language-selector"
-            value={i18n.language}
+            value={i18n.language.split('-')[0]}
             onChange={(e) => i18n.changeLanguage(e.target.value)}
           >
             <option value="en">🇺🇸 EN</option>
             <option value="es">🇪🇸 ES</option>
+            <option value="fr">🇫🇷 FR</option>
           </select>
         </div>
       </div>
