@@ -1,6 +1,6 @@
 # OrderBook Reflex Trainer
 
-**[Launch App →](https://houseofai.github.io/orderbook-reflex/)**
+**[Launch App →](https://deepentropy.github.io/orderbook-reflex/)**
 
 A web-based training tool designed to reduce trader reaction time when reading order books and identifying market signals.
 
