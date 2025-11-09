@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Entrenador de Reflejos de OrderBook",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "settings": "Configuración",
+    "memoryChallenge": "🧠 Desafío de Memoria"
+  },
+  "welcome": {
+    "title": "Entrenador de Reflejos de OrderBook",
+    "howItWorks": "Cómo Funciona:",
+    "instruction1": "Observa los libros de órdenes de múltiples intercambios actualizándose en tiempo real",
+    "instruction2": "Espera la Señal de Entrada (bordes verdes parpadeantes + sonido)",
+    "instruction3": "Presiona Q cuando veas la mejor oferta (lado BID, precio verde más alto)",
+    "instruction4": "Espera la Señal de Salida (bordes rojos parpadeantes + sonido)",
+    "instruction5": "Presiona P cuando veas la mejor demanda (lado ASK, precio rojo más bajo)",
+    "instruction6": "¡Rastrea tu tiempo de reacción y compite contra ti mismo!",
+    "quickTips": "💡 Consejos Rápidos:",
+    "tip1": "Concéntrate en la columna de Precio - es lo que más importa",
+    "tip2": "Verde = BID (compradores), Rojo = ASK (vendedores)",
+    "tip3": "Mejor oferta = precio verde más alto en todos los intercambios",
+    "tip4": "Mejor demanda = precio rojo más bajo en todos los intercambios",
+    "tip5": "¡Los tiempos de reacción menores a 2 segundos son excelentes!",
+    "startButton": "¡Comenzar Entrenamiento!"
+  },
+  "settings": {
+    "title": "⚙️ Configuración",
+    "hotkeys": "Atajos de Teclado",
+    "entrySignal": "Señal de Entrada",
+    "exitSignal": "Señal de Salida",
+    "pauseResume": "Pausar/Reanudar",
+    "dataManagement": "Gestión de Datos",
+    "resetAllStats": "Restablecer Todas las Estadísticas",
+    "close": "Cerrar"
+  },
+  "difficulty": {
+    "novice": "Novato",
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado",
+    "expert": "Experto",
+    "master": "Maestro"
+  },
+  "feedback": {
+    "wrongKey": "¡TECLA INCORRECTA!",
+    "perfect": "¡PERFECTO!",
+    "good": "¡BIEN!",
+    "tooSlow": "¡MUY LENTO!",
+    "correct": "¡CORRECTO! +10 XP"
+  },
+  "memoryChallenge": {
+    "title": "🧠 Desafío de Memoria de Precios",
+    "question1": "¿Cuál fue el mejor precio de oferta?",
+    "question2": "¿Cuál fue el mejor precio de demanda?",
+    "question3": "¿Qué intercambio tuvo la mejor oferta?",
+    "question4": "¿Qué intercambio tuvo la mejor demanda?",
+    "submit": "Enviar",
+    "skip": "Omitir",
+    "correct": "¡Correcto!",
+    "wrong": "¡Incorrecto!",
+    "score": "Puntuación"
+  },
+  "stats": {
+    "window": "Ventana:",
+    "lastRT": "Último TR:",
+    "avgRT": "TR Promedio:",
+    "success": "Éxito:",
+    "trades": "Operaciones:",
+    "avgDiff": "Dif. Promedio:",
+    "streak": "Racha:",
+    "sessionVsAllTime": "Sesión vs Todo el Tiempo",
+    "session": "Sesión:",
+    "allTime": "Todo el Tiempo:",
+    "bestStreak": "Mejor Racha:",
+    "fastest": "Más Rápido:",
+    "reactionTimeHistory": "Historial de Tiempo de Reacción",
+    "lastNTrades": "Últimas {{count}} operaciones"
+  },
+  "orderBook": {
+    "bid": "OFERTA",
+    "ask": "DEMANDA",
+    "maker": "Creador",
+    "price": "Precio",
+    "size": "Tamaño"
+  },
+  "footer": {
+    "paused": "PAUSADO - Presiona {{key}} para reanudar",
+    "entryHint": "Presiona {{key}} en {{side}} (Entrada)",
+    "exitHint": "Presiona {{key}} en {{side}} (Salida)",
+    "or": "o"
+  },
+  "resetModal": {
+    "title": "¿Restablecer Todas las Estadísticas?",
+    "message": "Esto eliminará permanentemente todo tu progreso, tiempos de reacción y estadísticas. Esta acción no se puede deshacer.",
+    "confirm": "Sí, Restablecer Todo",
+    "cancel": "Cancelar"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "OrderBook Reflex Trainer",
+    "pause": "Pause",
+    "resume": "Resume",
+    "settings": "Settings",
+    "memoryChallenge": "🧠 Memory Challenge"
+  },
+  "welcome": {
+    "title": "OrderBook Reflex Trainer",
+    "howItWorks": "How It Works:",
+    "instruction1": "Watch multiple exchange order books updating in real-time",
+    "instruction2": "Wait for the Entry Signal (flashing green borders + sound)",
+    "instruction3": "Press Q when you spot the best bid (BID side, highest green price)",
+    "instruction4": "Watch for the Exit Signal (flashing red borders + sound)",
+    "instruction5": "Press P when you spot the best ask (ASK side, lowest red price)",
+    "instruction6": "Track your reaction time and compete against yourself!",
+    "quickTips": "💡 Quick Tips:",
+    "tip1": "Focus on the Price column - it's what matters most",
+    "tip2": "Green = BID (buyers), Red = ASK (sellers)",
+    "tip3": "Best bid = highest green price across all exchanges",
+    "tip4": "Best ask = lowest red price across all exchanges",
+    "tip5": "Reaction times under 2 seconds are excellent!",
+    "startButton": "Start Training!"
+  },
+  "settings": {
+    "title": "⚙️ Settings",
+    "hotkeys": "Hotkeys",
+    "entrySignal": "Entry Signal",
+    "exitSignal": "Exit Signal",
+    "pauseResume": "Pause/Resume",
+    "dataManagement": "Data Management",
+    "resetAllStats": "Reset All Stats",
+    "close": "Close"
+  },
+  "difficulty": {
+    "novice": "Novice",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "expert": "Expert",
+    "master": "Master"
+  },
+  "feedback": {
+    "wrongKey": "WRONG KEY!",
+    "perfect": "PERFECT!",
+    "good": "GOOD!",
+    "tooSlow": "TOO SLOW!",
+    "correct": "CORRECT! +10 XP"
+  },
+  "memoryChallenge": {
+    "title": "🧠 Price Memory Challenge",
+    "question1": "What was the best bid price?",
+    "question2": "What was the best ask price?",
+    "question3": "Which exchange had the best bid?",
+    "question4": "Which exchange had the best ask?",
+    "submit": "Submit",
+    "skip": "Skip",
+    "correct": "Correct!",
+    "wrong": "Wrong!",
+    "score": "Score"
+  },
+  "stats": {
+    "window": "Window:",
+    "lastRT": "Last RT:",
+    "avgRT": "Avg RT:",
+    "success": "Success:",
+    "trades": "Trades:",
+    "avgDiff": "Avg Diff:",
+    "streak": "Streak:",
+    "sessionVsAllTime": "Session vs All-Time",
+    "session": "Session:",
+    "allTime": "All-Time:",
+    "bestStreak": "Best Streak:",
+    "fastest": "Fastest:",
+    "reactionTimeHistory": "Reaction Time History",
+    "lastNTrades": "Last {{count}} trades"
+  },
+  "orderBook": {
+    "bid": "BID",
+    "ask": "ASK",
+    "maker": "Maker",
+    "price": "Price",
+    "size": "Size"
+  },
+  "footer": {
+    "paused": "PAUSED - Press {{key}} to resume",
+    "entryHint": "Press {{key}} on {{side}} (Entry)",
+    "exitHint": "Press {{key}} on {{side}} (Exit)",
+    "or": "or"
+  },
+  "resetModal": {
+    "title": "Reset All Statistics?",
+    "message": "This will permanently delete all your progress, reaction times, and statistics. This action cannot be undone.",
+    "confirm": "Yes, Reset Everything",
+    "cancel": "Cancel"
+  }
+}

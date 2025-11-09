@@ -1,6 +1,7 @@
 // OrderBookColumn.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Quote } from "../models/ExchangeBookGenerator";
 import {
   TEXT_COLOR,
@@ -21,6 +22,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
   side,
   highlighted,
 }) => {
+  const { t } = useTranslation();
   // Sort quotes
   const sortedQuotes =
     side === "bid"
@@ -58,7 +60,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
           padding: "2px 5px",
         }}
       >
-        {side.toUpperCase()}
+        {t(`orderBook.${side}`).toUpperCase()}
       </div>
 
       {/* Column headers */}
@@ -81,7 +83,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
             width: "50px",
           }}
         >
-          Maker
+          {t('orderBook.maker')}
         </span>
         <span
           style={{
@@ -92,7 +94,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
             textAlign: "right",
           }}
         >
-          Price
+          {t('orderBook.price')}
         </span>
         <span
           style={{
@@ -103,7 +105,7 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
             textAlign: "right",
           }}
         >
-          Size
+          {t('orderBook.size')}
         </span>
       </div>
 
