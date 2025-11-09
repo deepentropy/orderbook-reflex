@@ -15,12 +15,18 @@
     "instruction4": "Watch for the Exit Signal (flashing red borders + sound)",
     "instruction5": "Press S (Sell) when you spot the best ask (ASK side, lowest red price)",
     "instruction6": "Track your reaction time and compete against yourself!",
+    "entryBuySignal": "Entry/Buy signal",
+    "exitSellSignal": "Exit/Sell signal",
+    "earnXP": "Earn XP for fast reactions • Level up to increase difficulty",
+    "testMemory": "Test your memory every 10 trades for bonus XP",
     "quickTips": "💡 Quick Tips:",
     "tip1": "Focus on the Price column - it's what matters most",
     "tip2": "Green = BID (buyers), Red = ASK (sellers)",
     "tip3": "Best bid = highest green price across all exchanges",
     "tip4": "Best ask = lowest red price across all exchanges",
     "tip5": "Reaction times under 2 seconds are excellent!",
+    "trackStats": "Track your {{streak}} and {{success}} in the stats panel",
+    "customizeControls": "Customize controls with ⚙️ • Toggle challenges with 🧠 • Pause with Space",
     "startButton": "Start Training!"
   },
   "settings": {
