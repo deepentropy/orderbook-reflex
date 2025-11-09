@@ -33,8 +33,8 @@ export const ROW_COLORS = [
 export const DEFAULT_ROW_COLOR = COL_BG_COLOR; // grey (#c1c1c1)
 
 // Key codes for keyboard controls
-export const ENTRY_KEY = "F1";  // Pivot Low
-export const EXIT_KEY = "F12";  // Pivot High
+export const ENTRY_KEY = "b";  // Buy (Entry)
+export const EXIT_KEY = "s";  // Sell (Exit)
 
 // OrderBook display settings
 export const ROW_HEIGHT = 16;
