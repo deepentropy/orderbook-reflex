@@ -15,12 +15,14 @@ interface OrderBookColumnProps {
   quotes: Quote[];
   side: "bid" | "ask";
   highlighted: boolean;
+  onTap?: () => void;
 }
 
 export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
   quotes,
   side,
   highlighted,
+  onTap,
 }) => {
   const { t } = useTranslation();
   // Sort quotes
@@ -43,10 +45,19 @@ export const OrderBookColumn: React.FC<OrderBookColumnProps> = ({
     }
   }
 
+  // Handle tap/click - only when highlighted
+  const handleTap = (e: React.MouseEvent | React.TouchEvent) => {
+    if (highlighted && onTap) {
+      e.preventDefault();
+      onTap();
+    }
+  };
 
   return (
     <div
       className="orderbook-column"
+      onClick={handleTap}
+      onTouchStart={handleTap}
       style={{
         backgroundColor: "rgb(0, 0, 0)",
         border: highlighted ? `3px solid rgb(0, 200, 0)` : "none",
