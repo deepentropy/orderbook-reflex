@@ -468,6 +468,7 @@ body {
   box-sizing: border-box;
   border-radius: 4px;
   overflow: hidden;
+  min-height: 208px; /* Header (16px) + Column headers (16px) + 10 rows (160px) + spacing */
 }
 
 .column-header {
@@ -719,6 +720,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
+  min-height: 240px; /* Ensure consistent height to prevent stats panel jumping */
 }
 
 /* Shared Spread Row */
