@@ -126,6 +126,9 @@ function App() {
     const hasVisited = localStorage.getItem("hasVisited");
     return !hasVisited;
   });
+  const [isMobile] = useState(() => {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  });
 
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
@@ -315,25 +318,9 @@ function App() {
     }, 1000);
   }, []);
 
-  // Keyboard event handler
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      // Handle hotkey recording mode
-      if (recordingKey !== null) {
-        event.preventDefault();
-        const key = event.key === " " ? " " : event.key;
-        setHotkeys((prev) => ({ ...prev, [recordingKey]: key }));
-        setRecordingKey(null);
-        return;
-      }
-
-      // Handle pause key
-      if (event.key === hotkeys.pause) {
-        event.preventDefault();
-        togglePause();
-        return;
-      }
-
+  // Process signal response (used by both keyboard and touch)
+  const processSignalResponse = useCallback(
+    (signalType: "ENTRY" | "EXIT") => {
       if (!priceModel || isPaused) return;
 
       const now = performance.now() / 1000;
@@ -341,6 +328,12 @@ function App() {
 
       // Check if there's an active signal to respond to
       if (!dirActive || signalModel.signalTimestamp === null) return;
+
+      // Verify the correct signal type
+      if (dirActive !== signalType) {
+        showFeedback(t('feedback.wrongKey'), 'wrong');
+        return;
+      }
 
       let sigPrice: number = 0;
       let userPrice: number = 0;
@@ -354,16 +347,10 @@ function App() {
       }
 
       const rt = now - signalModel.signalTimestamp;
-      const correctKey = (dirActive === "ENTRY" && event.key === hotkeys.entry) ||
-                         (dirActive === "EXIT" && event.key === hotkeys.exit);
 
-      // Determine feedback type
-      if (!correctKey) {
-        showFeedback(t('feedback.wrongKey'), 'wrong');
-        return; // Don't record wrong key presses
-      }
-
-      const ok = signalModel.recordReactionWithKey(event.key, now, hotkeys.entry, hotkeys.exit);
+      // For touch, we simulate the key press
+      const simulatedKey = signalType === "ENTRY" ? hotkeys.entry : hotkeys.exit;
+      const ok = signalModel.recordReactionWithKey(simulatedKey, now, hotkeys.entry, hotkeys.exit);
 
       // Show feedback based on reaction time
       if (rt <= signalModel.reactionWindow * 0.5) {
@@ -439,7 +426,48 @@ function App() {
         }
       }
     },
-    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback, currentStreak, sessionStats.trades, challengesEnabled, createMemoryChallenge]
+    [priceModel, signalModel, hotkeys, isPaused, showFeedback, currentStreak, sessionStats.trades, challengesEnabled, createMemoryChallenge, t]
+  );
+
+  // Keyboard event handler
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // Handle hotkey recording mode
+      if (recordingKey !== null) {
+        event.preventDefault();
+        const key = event.key === " " ? " " : event.key;
+        setHotkeys((prev) => ({ ...prev, [recordingKey]: key }));
+        setRecordingKey(null);
+        return;
+      }
+
+      // Handle pause key
+      if (event.key === hotkeys.pause) {
+        event.preventDefault();
+        togglePause();
+        return;
+      }
+
+      if (!priceModel || isPaused) return;
+
+      const dirActive = signalModel.currentSignal;
+
+      // Check if there's an active signal to respond to
+      if (!dirActive || signalModel.signalTimestamp === null) return;
+
+      const correctKey = (dirActive === "ENTRY" && event.key === hotkeys.entry) ||
+                         (dirActive === "EXIT" && event.key === hotkeys.exit);
+
+      // Determine feedback type
+      if (!correctKey) {
+        showFeedback(t('feedback.wrongKey'), 'wrong');
+        return; // Don't record wrong key presses
+      }
+
+      // Process the signal using the shared function
+      processSignalResponse(dirActive);
+    },
+    [priceModel, signalModel, hotkeys, isPaused, togglePause, recordingKey, showFeedback, processSignalResponse, t]
   );
 
   // Setup keyboard listener
@@ -740,12 +768,14 @@ function App() {
               quotes={priceModel.lastExchangeQuotes}
               side="bid"
               highlighted={signalModel.currentSignal === "ENTRY"}
+              onTap={() => processSignalResponse("ENTRY")}
             />
 
             <OrderBookColumn
               quotes={priceModel.lastExchangeQuotes}
               side="ask"
               highlighted={signalModel.currentSignal === "EXIT"}
+              onTap={() => processSignalResponse("EXIT")}
             />
           </div>
         </div>
@@ -792,8 +822,17 @@ function App() {
                 <div className="welcome-section">
                   <h3>{t('welcome.howItWorks')}</h3>
                   <ul>
-                    <li><strong>{t('orderBook.bid')}</strong> → Press <kbd>{hotkeys.entry}</kbd> ({t('welcome.entryBuySignal')})</li>
-                    <li><strong>{t('orderBook.ask')}</strong> → Press <kbd>{hotkeys.exit}</kbd> ({t('welcome.exitSellSignal')})</li>
+                    {isMobile ? (
+                      <>
+                        <li><strong>{t('orderBook.bid')}</strong> → Tap when highlighted ({t('welcome.entryBuySignal')})</li>
+                        <li><strong>{t('orderBook.ask')}</strong> → Tap when highlighted ({t('welcome.exitSellSignal')})</li>
+                      </>
+                    ) : (
+                      <>
+                        <li><strong>{t('orderBook.bid')}</strong> → Press <kbd>{hotkeys.entry}</kbd> ({t('welcome.entryBuySignal')})</li>
+                        <li><strong>{t('orderBook.ask')}</strong> → Press <kbd>{hotkeys.exit}</kbd> ({t('welcome.exitSellSignal')})</li>
+                      </>
+                    )}
                     <li>{t('welcome.earnXP')}</li>
                     <li>{t('welcome.testMemory')}</li>
                   </ul>
@@ -849,6 +888,8 @@ function App() {
         <div className="help-text">
           {isPaused ? (
             <span className="paused-text">{t('footer.paused', { key: hotkeys.pause === " " ? "Space" : hotkeys.pause })}</span>
+          ) : isMobile ? (
+            <>Tap highlighted orderbook side when it appears{!isPaused && <> | Press {hotkeys.pause === " " ? "Space" : hotkeys.pause} to pause</>}</>
           ) : (
             <>Press {hotkeys.entry} on PL (Entry) / {hotkeys.exit} on PH (Exit) | {hotkeys.pause === " " ? "Space" : hotkeys.pause} to pause</>
           )}
