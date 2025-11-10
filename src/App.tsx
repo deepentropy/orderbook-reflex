@@ -802,7 +802,7 @@ function App() {
                 <div className="welcome-section">
                   <h3>{t('welcome.quickTips')}</h3>
                   <ul>
-                    <li>{t('welcome.trackStats', { streak: t('stats.streak'), success: t('stats.success') })}</li>
+                    <li>{t('welcome.trackStats')}</li>
                     <li>{t('welcome.customizeControls')}</li>
                   </ul>
                 </div>
