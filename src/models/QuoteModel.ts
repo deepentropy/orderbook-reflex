@@ -119,7 +119,8 @@ export class QuoteGenerator {
   stepSecond(
     ts: Date,
     regime: Regime = ["N", "O"],
-    sign: Sign = "F"
+    sign: Sign = "F",
+    targetPrice?: number
   ): Array<{
     time: Date;
     priceBid: number;
@@ -134,8 +135,14 @@ export class QuoteGenerator {
     for (let i = 0; i < n; i++) {
       const t = this.model.sampleTick(regime, currentSign);
 
+      // Apply target-seeking bias if target price is specified
+      let dp = t.dp;
+      if (targetPrice !== undefined) {
+        dp = this.biasTowardTarget(dp, targetPrice);
+      }
+
       // Update synthetic bid/ask
-      this.bid += t.dp;
+      this.bid += dp;
       this.ask = Math.max(this.bid + t.spread, this.bid + 0.01);
 
       ticks.push({
@@ -147,10 +154,50 @@ export class QuoteGenerator {
       });
 
       // Update sign for next tick
-      currentSign = t.dp > 0 ? "U" : t.dp < 0 ? "D" : "F";
+      currentSign = dp > 0 ? "U" : dp < 0 ? "D" : "F";
     }
 
     return ticks;
+  }
+
+  /**
+   * Bias price change toward target price while maintaining some randomness
+   * Uses a weighted blend: 70% toward target, 30% from model
+   */
+  private biasTowardTarget(dp: number, targetPrice: number): number {
+    const currentPrice = this.bid;
+    const distanceToTarget = targetPrice - currentPrice;
+
+    // If we're very close to target (within 0.1%), use model's dp as-is
+    if (Math.abs(distanceToTarget) < currentPrice * 0.001) {
+      return dp;
+    }
+
+    // Calculate desired direction and magnitude
+    const desiredDirection = Math.sign(distanceToTarget);
+    const urgency = Math.min(1.0, Math.abs(distanceToTarget) / currentPrice * 20); // 0-1
+
+    // Bias the price change toward target
+    // When far from target, bias is strong (70%)
+    // When close to target, bias weakens (use more from model)
+    const biasFactor = 0.7 * urgency;
+    const stepSize = Math.min(0.05, Math.abs(distanceToTarget) * 0.1); // Max 5 cent steps
+
+    const biasedDp = desiredDirection * stepSize;
+    const finalDp = biasFactor * biasedDp + (1 - biasFactor) * dp;
+
+    return finalDp;
+  }
+
+  /**
+   * Calculate volume-weighted mid price
+   */
+  getVolumeWeightedMid(sizeBid: number, sizeAsk: number): number {
+    const totalSize = sizeBid + sizeAsk;
+    if (totalSize === 0) {
+      return (this.bid + this.ask) / 2;
+    }
+    return (this.bid * sizeAsk + this.ask * sizeBid) / totalSize;
   }
 
   getBid(): number {
@@ -159,5 +206,9 @@ export class QuoteGenerator {
 
   getAsk(): number {
     return this.ask;
+  }
+
+  getMid(): number {
+    return (this.bid + this.ask) / 2;
   }
 }
