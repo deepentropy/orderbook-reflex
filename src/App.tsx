@@ -143,7 +143,7 @@ function App() {
 
     // Adjust difficulty based on level
     const magnitude = Math.max(0.3, 1.5 - level * 0.1); // Smaller breakouts at higher levels
-    const timeWindow: [number, number] = [15, 45 - Math.min(level * 2, 20)]; // Tighter window at higher levels
+    const timeWindow: [number, number] = [5, 15 - Math.min(level, 5)]; // Fast breakouts: 5-15s at level 1, 5-10s at level 10+
 
     if (isBullish) {
       return createBullishBreakout({
