@@ -575,63 +575,6 @@ body {
   }
 }
 
-/* Breakout Notification */
-.breakout-notification {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  padding: 15px 30px;
-  border-radius: 8px;
-  text-align: center;
-  animation: breakout-slide-in 0.3s ease-out;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  font-weight: bold;
-}
-
-.breakout-message {
-  font-size: 20px;
-  letter-spacing: 1px;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-.breakout-warning {
-  background: linear-gradient(135deg, rgba(255, 165, 0, 0.9), rgba(255, 140, 0, 0.9));
-  border: 2px solid rgb(255, 140, 0);
-  color: rgb(255, 255, 255);
-}
-
-.breakout-start {
-  background: linear-gradient(135deg, rgba(0, 180, 255, 0.9), rgba(0, 140, 200, 0.9));
-  border: 2px solid rgb(0, 180, 255);
-  color: rgb(255, 255, 255);
-}
-
-.breakout-progress {
-  background: linear-gradient(135deg, rgba(100, 200, 255, 0.9), rgba(80, 160, 220, 0.9));
-  border: 2px solid rgb(100, 200, 255);
-  color: rgb(255, 255, 255);
-}
-
-.breakout-completion {
-  background: linear-gradient(135deg, rgba(0, 255, 100, 0.9), rgba(0, 200, 80, 0.9));
-  border: 2px solid rgb(0, 255, 100);
-  color: rgb(255, 255, 255);
-}
-
-@keyframes breakout-slide-in {
-  0% {
-    transform: translateX(-50%) translateY(-30px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-}
-
 /* Difficulty Level Bar */
 .difficulty-bar {
   background: rgb(45, 45, 45);

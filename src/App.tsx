@@ -8,7 +8,6 @@ import { PriceModel } from "./models/PriceModel";
 import { SignalModel } from "./models/SignalModel";
 import { QuoteModel } from "./models/QuoteModel";
 import { createBullishBreakout, createBearishBreakout, MarketScenario } from "./models/MarketScenario";
-import { BreakoutEvent } from "./models/BreakoutNotifier";
 import { REFRESH_RATE, ENTRY_KEY, EXIT_KEY } from "./constants";
 import "./App.css";
 
@@ -131,52 +130,10 @@ function App() {
   const [isMobile] = useState(() => {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   });
-  const [breakoutNotification, setBreakoutNotification] = useState<{
-    message: string;
-    type: 'warning' | 'start' | 'progress' | 'completion';
-    visible: boolean;
-  }>({ message: '', type: 'warning', visible: false });
 
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
   const feedbackTimerRef = useRef<number>();
-  const breakoutNotificationTimerRef = useRef<number>();
-
-  // Handle breakout events from the price model
-  const handleBreakoutEvent = useCallback((event: BreakoutEvent) => {
-    let message = '';
-
-    switch (event.type) {
-      case 'warning':
-        message = `⚠️ Breakout incoming in ${Math.ceil(event.timeToBreakout || 0)}s!`;
-        break;
-      case 'start':
-        message = `🚀 ${event.breakoutType === 'bullish' ? 'Bullish' : 'Bearish'} breakout starting!`;
-        break;
-      case 'progress':
-        if (event.progress && event.progress > 0.5) {
-          message = `📈 Breakout ${Math.round(event.progress * 100)}% complete`;
-        }
-        break;
-      case 'completion':
-        message = `✅ Breakout target reached!`;
-        break;
-    }
-
-    if (message) {
-      setBreakoutNotification({ message, type: event.type, visible: true });
-
-      // Auto-hide after 3 seconds (except for warnings which stay visible)
-      if (event.type !== 'warning') {
-        if (breakoutNotificationTimerRef.current) {
-          clearTimeout(breakoutNotificationTimerRef.current);
-        }
-        breakoutNotificationTimerRef.current = window.setTimeout(() => {
-          setBreakoutNotification(prev => ({ ...prev, visible: false }));
-        }, 3000);
-      }
-    }
-  }, []);
 
   // Create scenario based on current level
   const createScenarioForLevel = useCallback((level: number): MarketScenario => {
@@ -194,8 +151,7 @@ function App() {
           timeWindow,
           magnitude,
           speed: 'gradual',
-          preWarning: 5,
-          notification: true,
+          notification: false, // No UI notifications - rely on pivot detection for signals
         },
         duration: 60,
       });
@@ -206,8 +162,7 @@ function App() {
           timeWindow,
           magnitude,
           speed: 'gradual',
-          preWarning: 5,
-          notification: true,
+          notification: false, // No UI notifications - rely on pivot detection for signals
         },
         duration: 60,
       });
@@ -230,12 +185,6 @@ function App() {
           const quoteModel = new QuoteModel(modelData);
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
-
-          // Subscribe to breakout events
-          pm.getNotifier().onAny((event: BreakoutEvent) => {
-            handleBreakoutEvent(event);
-          });
-
           setPriceModel(pm);
         } else {
           // Model not found, use empty model (will generate minimal data)
@@ -243,12 +192,6 @@ function App() {
           const quoteModel = new QuoteModel();
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
-
-          // Subscribe to breakout events
-          pm.getNotifier().onAny((event: BreakoutEvent) => {
-            handleBreakoutEvent(event);
-          });
-
           setPriceModel(pm);
         }
       } catch (error) {
@@ -257,12 +200,6 @@ function App() {
         const quoteModel = new QuoteModel();
         const scenario = createScenarioForLevel(currentLevelIndex + 1);
         const pm = new PriceModel(quoteModel, scenario);
-
-        // Subscribe to breakout events
-        pm.getNotifier().onAny((event: BreakoutEvent) => {
-          handleBreakoutEvent(event);
-        });
-
         setPriceModel(pm);
       }
     };
@@ -893,13 +830,6 @@ function App() {
             {feedback.type === 'good' && <div className="feedback-subtitle">Within window</div>}
             {feedback.type === 'slow' && <div className="feedback-subtitle">Try to be faster</div>}
             {feedback.type === 'wrong' && <div className="feedback-subtitle">Wrong signal key</div>}
-          </div>
-        )}
-
-        {/* Breakout Notification */}
-        {breakoutNotification.visible && (
-          <div className={`breakout-notification breakout-${breakoutNotification.type}`}>
-            <div className="breakout-message">{breakoutNotification.message}</div>
           </div>
         )}
 
