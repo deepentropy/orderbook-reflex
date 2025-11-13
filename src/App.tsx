@@ -8,6 +8,7 @@ import { PriceModel } from "./models/PriceModel";
 import { SignalModel } from "./models/SignalModel";
 import { QuoteModel } from "./models/QuoteModel";
 import { createBullishBreakout, createBearishBreakout, MarketScenario } from "./models/MarketScenario";
+import { BreakoutEvent } from "./models/BreakoutNotifier";
 import { REFRESH_RATE, ENTRY_KEY, EXIT_KEY } from "./constants";
 import "./App.css";
 
@@ -185,6 +186,17 @@ function App() {
           const quoteModel = new QuoteModel(modelData);
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
+
+          // Subscribe to breakout start events to trigger immediate signals
+          pm.getNotifier().on('start', (event: BreakoutEvent) => {
+            if (signalModel.currentSignal === null) {
+              const now = performance.now() / 1000;
+              // Map breakout type to signal: bullish → ENTRY, bearish → EXIT
+              const signal = event.breakoutType === 'bullish' ? 'ENTRY' : 'EXIT';
+              signalModel.trigger(signal, now);
+            }
+          });
+
           setPriceModel(pm);
         } else {
           // Model not found, use empty model (will generate minimal data)
@@ -192,6 +204,17 @@ function App() {
           const quoteModel = new QuoteModel();
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
+
+          // Subscribe to breakout start events to trigger immediate signals
+          pm.getNotifier().on('start', (event: BreakoutEvent) => {
+            if (signalModel.currentSignal === null) {
+              const now = performance.now() / 1000;
+              // Map breakout type to signal: bullish → ENTRY, bearish → EXIT
+              const signal = event.breakoutType === 'bullish' ? 'ENTRY' : 'EXIT';
+              signalModel.trigger(signal, now);
+            }
+          });
+
           setPriceModel(pm);
         }
       } catch (error) {
@@ -200,12 +223,23 @@ function App() {
         const quoteModel = new QuoteModel();
         const scenario = createScenarioForLevel(currentLevelIndex + 1);
         const pm = new PriceModel(quoteModel, scenario);
+
+        // Subscribe to breakout start events to trigger immediate signals
+        pm.getNotifier().on('start', (event: BreakoutEvent) => {
+          if (signalModel.currentSignal === null) {
+            const now = performance.now() / 1000;
+            // Map breakout type to signal: bullish → ENTRY, bearish → EXIT
+            const signal = event.breakoutType === 'bullish' ? 'ENTRY' : 'EXIT';
+            signalModel.trigger(signal, now);
+          }
+        });
+
         setPriceModel(pm);
       }
     };
 
     loadModel();
-  }, [createScenarioForLevel, xp]); // xp determines the level
+  }, [createScenarioForLevel, xp, signalModel]); // xp determines the level
 
   // Save hotkeys to localStorage
   useEffect(() => {
@@ -559,12 +593,13 @@ function App() {
           setPriceSnapshots(prev => [...prev.slice(-20), snapshot]);
         }
 
-        // Trigger signal when pivot appears
-        const pivot = priceModel.pivot;
-        if (pivot && signalModel.currentSignal === null) {
-          const sig = pivot === "PL" ? "ENTRY" : "EXIT";
-          signalModel.trigger(sig, now);
-        }
+        // Signals now triggered directly by breakout events (0-lag)
+        // Old pivot-based triggering disabled to avoid 30s delay
+        // const pivot = priceModel.pivot;
+        // if (pivot && signalModel.currentSignal === null) {
+        //   const sig = pivot === "PL" ? "ENTRY" : "EXIT";
+        //   signalModel.trigger(sig, now);
+        // }
 
         setUpdateTrigger((prev) => prev + 1);
         lastUpdateRef.current = timestamp;
