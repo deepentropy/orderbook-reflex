@@ -135,7 +135,7 @@ function App() {
   const animationFrameRef = useRef<number>();
   const lastUpdateRef = useRef<number>(0);
   const feedbackTimerRef = useRef<number>();
-
+  const quoteModelRef = useRef<QuoteModel | null>(null);
   // Create scenario based on current level
   const createScenarioForLevel = useCallback((level: number): MarketScenario => {
     // Alternate between bullish and bearish breakouts
@@ -184,6 +184,7 @@ function App() {
         if (response.ok) {
           const modelData = await response.json();
           const quoteModel = new QuoteModel(modelData);
+          quoteModelRef.current = quoteModel; // Store for scenario resets
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
 
@@ -202,6 +203,7 @@ function App() {
           // Model not found, use empty model (will generate minimal data)
           console.warn("Model not found, using empty model");
           const quoteModel = new QuoteModel();
+          quoteModelRef.current = quoteModel; // Store for scenario resets
           const scenario = createScenarioForLevel(currentLevelIndex + 1);
           const pm = new PriceModel(quoteModel, scenario);
 
@@ -221,6 +223,7 @@ function App() {
         console.error("Error loading model:", error);
         // Fallback to empty model
         const quoteModel = new QuoteModel();
+        quoteModelRef.current = quoteModel; // Store for scenario resets
         const scenario = createScenarioForLevel(currentLevelIndex + 1);
         const pm = new PriceModel(quoteModel, scenario);
 
@@ -395,6 +398,31 @@ function App() {
   }, []);
 
   // Process signal response (used by both keyboard and touch)
+  // Reset to a new scenario after user responds
+  const resetToNewScenario = useCallback(() => {
+    if (!priceModel || !quoteModelRef.current) return;
+
+    // Calculate current level based on XP
+    const level = DIFFICULTY_LEVELS.findIndex(l => xp < l.xpRequired) - 1;
+    const currentLevelIndex = Math.max(0, level === -2 ? DIFFICULTY_LEVELS.length - 1 : level);
+
+    // Create new scenario
+    const newScenario = createScenarioForLevel(currentLevelIndex + 1);
+
+    // Reset PriceModel with new scenario
+    priceModel.resetWithScenario(newScenario);
+
+    // Re-subscribe to breakout start events
+    priceModel.getNotifier().clearListeners();
+    priceModel.getNotifier().on('start', (event: BreakoutEvent) => {
+      if (signalModel.currentSignal === null) {
+        const now = performance.now() / 1000;
+        const signal = event.breakoutType === 'bullish' ? 'ENTRY' : 'EXIT';
+        signalModel.trigger(signal, now);
+      }
+    });
+  }, [priceModel, xp, createScenarioForLevel, signalModel]);
+
   const processSignalResponse = useCallback(
     (signalType: "ENTRY" | "EXIT") => {
       if (!priceModel || isPaused) return;
@@ -501,8 +529,14 @@ function App() {
           setIsPaused(true);
         }
       }
+
+      // Reset to a new scenario for continuous training
+      // Small delay to let feedback be visible
+      setTimeout(() => {
+        resetToNewScenario();
+      }, 500);
     },
-    [priceModel, signalModel, hotkeys, isPaused, showFeedback, currentStreak, sessionStats.trades, challengesEnabled, createMemoryChallenge, t]
+    [priceModel, signalModel, hotkeys, isPaused, showFeedback, currentStreak, sessionStats.trades, challengesEnabled, createMemoryChallenge, t, resetToNewScenario]
   );
 
   // Keyboard event handler
