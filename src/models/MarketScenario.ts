@@ -135,7 +135,7 @@ export interface MarketScenario {
  */
 export function createBullishBreakout(options?: Partial<MarketScenario>): MarketScenario {
   return {
-    startPrice: 100.0,
+    startPrice: 3.75,
     duration: 60,
     breakout: {
       type: 'bullish',
@@ -146,10 +146,10 @@ export function createBullishBreakout(options?: Partial<MarketScenario>): Market
       notification: true,
     },
     spread: {
-      base: 0.02,
+      base: 0.01,
       volatilityMultiplier: 1.5,
       minSpread: 0.01,
-      maxSpread: 0.10,
+      maxSpread: 0.05,
     },
     recordReactionTime: true,
     ...options,
@@ -161,7 +161,7 @@ export function createBullishBreakout(options?: Partial<MarketScenario>): Market
  */
 export function createBearishBreakout(options?: Partial<MarketScenario>): MarketScenario {
   return {
-    startPrice: 100.0,
+    startPrice: 3.75,
     duration: 60,
     breakout: {
       type: 'bearish',
@@ -172,10 +172,10 @@ export function createBearishBreakout(options?: Partial<MarketScenario>): Market
       notification: true,
     },
     spread: {
-      base: 0.02,
+      base: 0.01,
       volatilityMultiplier: 1.5,
       minSpread: 0.01,
-      maxSpread: 0.10,
+      maxSpread: 0.05,
     },
     recordReactionTime: true,
     ...options,
@@ -187,7 +187,7 @@ export function createBearishBreakout(options?: Partial<MarketScenario>): Market
  */
 export function createFakeBreakoutScenario(options?: Partial<MarketScenario>): MarketScenario {
   return {
-    startPrice: 100.0,
+    startPrice: 3.75,
     duration: 90,
     breakout: {
       type: 'bullish',
@@ -198,10 +198,10 @@ export function createFakeBreakoutScenario(options?: Partial<MarketScenario>): M
       notification: true,
     },
     spread: {
-      base: 0.02,
+      base: 0.01,
       volatilityMultiplier: 1.5,
       minSpread: 0.01,
-      maxSpread: 0.10,
+      maxSpread: 0.05,
     },
     advanced: {
       fakeBreakouts: [
@@ -222,7 +222,7 @@ export function createFakeBreakoutScenario(options?: Partial<MarketScenario>): M
  */
 export function createRangingScenario(options?: Partial<MarketScenario>): MarketScenario {
   return {
-    startPrice: 100.0,
+    startPrice: 3.75,
     duration: 60,
     breakout: {
       type: 'none',
@@ -232,7 +232,7 @@ export function createRangingScenario(options?: Partial<MarketScenario>): Market
       notification: false,
     },
     spread: {
-      base: 0.02,
+      base: 0.01,
       volatilityMultiplier: 1.0,
       minSpread: 0.01,
       maxSpread: 0.05,
